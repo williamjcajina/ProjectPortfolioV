@@ -2,23 +2,22 @@
 #include "D3dclass.h"
 #include <DirectXMath.h>
 using namespace DirectX;
-	struct Simple_Vertex
+	
+	struct VertexPositionColor
 	{
-		DirectX::XMFLOAT2 vertex;	// need to scope into "DirectX" namespace or add using declaration to top of file
-
+		DirectX::XMFLOAT3 pos;
+		DirectX::XMFLOAT3 color;
+		DirectX::XMFLOAT3 normal;
+		DirectX::XMFLOAT3 tangent;
+		DirectX::XMFLOAT3 binormal;
+	};
+	struct ModelViewProjectionConstantBuffer
+	{
+		DirectX::XMFLOAT4X4 model;
+		DirectX::XMFLOAT4X4 view;
+		DirectX::XMFLOAT4X4 projection;
+	/*	DirectX::XMFLOAT2 pad;*/
 
 	};
 
-	struct SEND_TO_VRAM
-	{
-		XMFLOAT4 rgba;
-		XMFLOAT2 offset;
-		XMFLOAT2 padding;
-
-
-
-	};
-
-	/*SEND_TO_VRAM toShader;*/
-	/*SEND_TO_VRAM toShaderGrid;*/
 

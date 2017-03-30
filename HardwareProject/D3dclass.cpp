@@ -15,8 +15,8 @@ void D3dclass::setSwapChain(HWND window)
 {
 	DXGI_SWAP_CHAIN_DESC dscd;
 	dscd.BufferCount = 1;
-	dscd.BufferDesc.Width = 1000;
-	dscd.BufferDesc.Height = 1000;
+	dscd.BufferDesc.Width = SCREEN_WIDTH;
+	dscd.BufferDesc.Height = SCREEN_HEIGHT;
 	dscd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	dscd.BufferDesc.RefreshRate.Numerator = 0;
 	dscd.BufferDesc.RefreshRate.Denominator = 1;
@@ -29,7 +29,7 @@ void D3dclass::setSwapChain(HWND window)
 	dscd.Windowed = TRUE;
 	dscd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	dscd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
-	
+
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, D3D11_SDK_VERSION, &dscd, &swapChain, &device, NULL, &context);
 }
 
@@ -39,8 +39,8 @@ void D3dclass::setView()
 	swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D),
 		(void**)&pBuffer);
 
-	viewPort.Width = 500;
-	viewPort.Height = 500;
+	viewPort.Width = SCREEN_WIDTH;
+	viewPort.Height = SCREEN_HEIGHT;
 	viewPort.MinDepth = 0;
 	viewPort.MaxDepth = 1;
 	viewPort.TopLeftX = 0;
@@ -51,128 +51,48 @@ void D3dclass::setView()
 	pBuffer->Release();
 }
 
-void D3dclass::createBuffers()
-{
-	Simple_Vertex circleVertices[361];
-
-	for (int i = 0; i < VertexNumber; i++)
-	{
-		float angle = (i*DirectX::XM_PI) / 180.0;
-		circleVertices[i].vertex.y = 0.20*sinf(angle);
-		circleVertices[i].vertex.x = 0.20*cosf(angle);
-		
-
-	}
-
-	D3D11_BUFFER_DESC circleDesc;
-	ZeroMemory(&circleDesc, sizeof(D3D11_SUBRESOURCE_DATA));
-	circleDesc.Usage = D3D11_USAGE_IMMUTABLE;
-
-	circleDesc.ByteWidth = sizeof(Simple_Vertex) * 361;
-	circleDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	circleDesc.CPUAccessFlags = 0;
-	circleDesc.MiscFlags = 0;
-
-
-
-
-	D3D11_SUBRESOURCE_DATA InitData;
-	ZeroMemory(&InitData, sizeof(D3D11_SUBRESOURCE_DATA));
-	InitData.pSysMem = circleVertices;
-	InitData.SysMemPitch = 0;
-	InitData.SysMemSlicePitch = 0;
-
-	device->CreateBuffer(&circleDesc, &InitData, &vertexBuffer);
-}
-
-void D3dclass::setConstantBuffers()
-{
-	D3D11_BUFFER_DESC constantDesc;
-
-	constantDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	constantDesc.ByteWidth = sizeof(SEND_TO_VRAM);
-	constantDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	constantDesc.MiscFlags = NULL;
-	constantDesc.StructureByteStride = sizeof(SEND_TO_VRAM);
-	constantDesc.Usage = D3D11_USAGE_DYNAMIC;
-
-
-	device->CreateBuffer(&constantDesc, NULL, &constantBuffer);
-	toShader.offset.x = 0;
-	toShader.offset.y = 0;
-	toShader.rgba.x = 1;
-	toShader.rgba.y = 1;
-	toShader.rgba.z = 0;
-	toShader.rgba.w = 1;
-
-}
 
 void D3dclass::createInputLayout()
 {
-	device->CreateVertexShader(Trivial_VS, sizeof(Trivial_VS), NULL, &vertexShader);
-	device->CreatePixelShader(Trivial_PS, sizeof(Trivial_PS), NULL, &pixelShader);
+	HRESULT hr;
+	hr =device->CreateVertexShader(VertexShader, sizeof(VertexShader), NULL, &vertexShader);
+	hr =device->CreatePixelShader(PixelShader, sizeof(PixelShader), NULL, &pixelShader);
 
 	D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
 	{
-		{ "POSITION",0,DXGI_FORMAT_R32G32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 }
+		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "UV", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+
 	};
 	
-	device->CreateInputLayout(inputElementDesc, 1, &Trivial_VS, sizeof(Trivial_VS), &layout);
+	 hr =device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), &VertexShader, sizeof(VertexShader), &layout);
+	
 }
 
-void D3dclass::draw()
+void D3dclass::setDepthStencilView()
 {
-	context->OMSetRenderTargets(1, &rtv, NULL);
+	CD3D11_TEXTURE2D_DESC depthStencilDesc(
+		DXGI_FORMAT_D24_UNORM_S8_UINT,
+		lround(SCREEN_WIDTH),
+		lround(SCREEN_HEIGHT),
+		1, 
+		1,
+		D3D11_BIND_DEPTH_STENCIL
+	);
+
+	ID3D11Texture2D* depthStencil;
 	
-	context->RSSetViewports(1, &viewPort);
-	
-	float color[4];
+	device->CreateTexture2D(&depthStencilDesc,nullptr,&depthStencil);
 
-	color[0] = 0;
-	color[1] = 0;
-	color[2] = 0.5;
-	color[3] = 1;
+	CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(D3D11_DSV_DIMENSION_TEXTURE2D);
+	device->CreateDepthStencilView(depthStencil,&depthStencilViewDesc,&dsv);
 
-	context->ClearRenderTargetView(rtv, color);
-
-	D3D11_MAPPED_SUBRESOURCE mapSubRes;
-	
-
-
-	context->VSSetConstantBuffers(0, 1, &constantBuffer);
-
-	UINT stride = sizeof(Simple_Vertex);
-	UINT offset = 0;
-
-	context->IASetVertexBuffers(0, 1, &gridBuffer, &stride, &offset);
-	context->VSSetShader(vertexShader, NULL, NULL);
-	context->PSSetShader(pixelShader, NULL, NULL);
-
-
-	context->IASetInputLayout(layout);
-
-
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-
-	context->Draw(numGridVertices, 0);
-
-
-
-
-
-	ZeroMemory(&mapSubRes, sizeof(mapSubRes));
-	context->Map(constantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &mapSubRes);
-	memcpy(mapSubRes.pData, &toShader, sizeof(SEND_TO_VRAM));
-	context->Unmap(constantBuffer, NULL);
 
 	
-	context->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
-	context->Draw(VertexNumber, 0);
 
-	swapChain->Present(0, 0);
 }
+
 
 void D3dclass::Shutdown()
 {
@@ -181,8 +101,5 @@ void D3dclass::Shutdown()
 	context->Release();
 	rtv->Release();
 	swapChain->Release();
-	gridBuffer->Release();
-	vertexBuffer->Release();
-	constantBuffer->Release();
-
+	
 }

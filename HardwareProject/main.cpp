@@ -15,12 +15,12 @@ using namespace std;
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
 #include <DirectXCollision.h>
-
+#include "SceneRenderer.h"
 using namespace DirectX;
-
+#include "XTime.h"
 #include "D3dclass.h"
-#define BACKBUFFER_WIDTH	1000
-#define BACKBUFFER_HEIGHT	1000
+//#define BACKBUFFER_WIDTH	100
+//#define BACKBUFFER_HEIGHT	100
 
 
 
@@ -30,16 +30,17 @@ class DEMO_APP
 	WNDPROC							appWndProc;
 	HWND							window;
 	
-	
+
 	D3dclass d3dclass;
-	
+
 
 public:
 
+	SceneRenderer scene;
 
-
+	XTime timer;
 	DEMO_APP(HINSTANCE hinst, WNDPROC proc);
-	bool Run();
+	bool Run(MSG msg);
 	bool ShutDown();
 };
 
@@ -62,7 +63,7 @@ DEMO_APP::DEMO_APP(HINSTANCE hinst, WNDPROC proc)
 
     RegisterClassEx( &wndClass );
 
-	RECT window_size = { 0, 0, BACKBUFFER_WIDTH, BACKBUFFER_HEIGHT };
+	RECT window_size = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 	AdjustWindowRect(&window_size, WS_OVERLAPPEDWINDOW, false);
 
 	window = CreateWindow(	L"DirectXApplication", L"CGS Hardware Project",	WS_OVERLAPPEDWINDOW & ~(WS_THICKFRAME|WS_MAXIMIZEBOX), 
@@ -72,23 +73,22 @@ DEMO_APP::DEMO_APP(HINSTANCE hinst, WNDPROC proc)
     ShowWindow( window, SW_SHOW );
 
 	d3dclass.setSwapChain(window);
-	
 	d3dclass.setView();
-
-	d3dclass.createBuffers();
-	
-	d3dclass.setConstantBuffers();
-	
-
 	d3dclass.createInputLayout();
-
+	scene.Resources = d3dclass;
+	scene.createBuffers();
+	scene.createConstantBuffers();
+	scene.setCamera();
 }
 
 
-bool DEMO_APP::Run()
+bool DEMO_APP::Run(MSG msg)
 {
-	d3dclass.draw();
-	return true; 
+	timer.Signal();
+		scene.Render();
+		scene.UpdateCamera(msg,timer);
+		return true; 
+	
 }
 
 
@@ -109,7 +109,7 @@ int WINAPI wWinMain( HINSTANCE hInstance, HINSTANCE, LPTSTR, int )
 	srand(unsigned int(time(0)));
 	DEMO_APP myApp(hInstance,(WNDPROC)WndProc);	
     MSG msg; ZeroMemory( &msg, sizeof( msg ) );
-    while ( msg.message != WM_QUIT && myApp.Run() )
+    while ( msg.message != WM_QUIT && myApp.Run(msg) )
     {	
 	    if ( PeekMessage( &msg, NULL, 0, 0, PM_REMOVE ) )
         { 
