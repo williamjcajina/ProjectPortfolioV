@@ -50,8 +50,8 @@ void SceneRenderer::createBuffers()
 	{
 
 
-		2,1,0, // -x
-		2,3,1,
+		1,0,2, // -x
+		3,2,1,
 
 		5,6,4, // +x
 		7,6,5,
@@ -306,7 +306,8 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 		{
 			float dx = currMousePos[0] - preMousePos[0];
 			float dy = currMousePos[1] - preMousePos[1];
-			
+			dx *= 0.5f;
+			dy *= 0.5f;
 			XMFLOAT4 pos = XMFLOAT4(m_camera._41, m_camera._42, m_camera._43, m_camera._44);
 
 			m_camera._41 = 0;
