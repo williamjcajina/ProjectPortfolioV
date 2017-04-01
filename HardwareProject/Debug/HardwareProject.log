@@ -1,4 +1,8 @@
-﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (HardwareProject.vcxproj).  This can lead to incorrect clean and rebuild behavior.
+﻿  compilation header save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\HardwareProject\PixelShader.csh
+  compilation object save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\Debug\PixelShader.cso
+  compilation header save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\HardwareProject\VertexShader.csh
+  compilation object save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\Debug\VertexShader.cso
+  XTime.cpp
   SceneRenderer.cpp
 c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(189): warning C4305: '=': truncation from 'double' to 'float'
 c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(190): warning C4305: '=': truncation from 'double' to 'float'
@@ -7,5 +11,8 @@ c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(244): 
 c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(303): warning C4244: '=': conversion from 'LONG' to 'float', possible loss of data
 c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(304): warning C4244: '=': conversion from 'LONG' to 'float', possible loss of data
 c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(245): warning C4101: 'mLClick': unreferenced local variable
-  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\Project.exe
-  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\Project.pdb (Full PDB)
+  main.cpp
+  D3dclass.cpp
+  Generating Code...
+  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.exe
+  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.pdb (Full PDB)

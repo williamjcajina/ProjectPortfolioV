@@ -10,7 +10,7 @@ using namespace std;
 #include <d3d11.h>
 #pragma comment(lib,"d3d11.lib")
 
-
+#include "../FBX_exporter/FBX_Exporter.h"
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
@@ -87,6 +87,7 @@ bool DEMO_APP::Run(MSG msg)
 	timer.Signal();
 		scene.Render();
 		scene.UpdateCamera(msg,timer);
+		int j = getnumber("kjkdfs");
 		return true; 
 	
 }

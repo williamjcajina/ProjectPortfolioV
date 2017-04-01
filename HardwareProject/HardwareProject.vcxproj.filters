@@ -47,6 +47,9 @@
     <ClInclude Include="XTime.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\FBX_exporter\FBX_Exporter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">
