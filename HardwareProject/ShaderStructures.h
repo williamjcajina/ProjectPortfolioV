@@ -8,8 +8,8 @@ using namespace DirectX;
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 color;
 		DirectX::XMFLOAT3 normal;
-		DirectX::XMFLOAT3 tangent;
-		DirectX::XMFLOAT3 binormal;
+	/*	DirectX::XMFLOAT3 tangent;
+		DirectX::XMFLOAT3 binormal;*/
 	};
 	struct ModelViewProjectionConstantBuffer
 	{
@@ -19,5 +19,8 @@ using namespace DirectX;
 	/*	DirectX::XMFLOAT2 pad;*/
 
 	};
+
+
+
 
 

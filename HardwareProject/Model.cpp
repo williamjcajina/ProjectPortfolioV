@@ -150,9 +150,31 @@ void Model::loadModel(const char* file_name)
 
 bool Model::loadModelFBX(const char * file_name)
 {
-	std::vector<vect> vertices;
-	
-	loadFBX(file_name, vertices);
+	std::vector<Vertex> _vertices;
+
+	loadFBX(file_name, _vertices, vertexIndexes);
+
+
+	for (int i = 0; i < vertexIndexes.size(); i++)
+	{
+		VertexPositionUVNormal vertex;
+		Vertex t = _vertices[i];
+
+		vertex.pos.x = t.x;
+		vertex.pos.y = t.y;
+		vertex.pos.z = t.z;
+
+		vertex.normal.x = t.nx;
+		vertex.normal.y = t.ny;
+		vertex.normal.z = t.nz;
+
+		vertex.uv.x = t.tu;
+		vertex.uv.y = t.tv;
+		vertex.uv.z = 0;
+		vertexList.push_back(vertex);
+	}
+
+
 	return true;
 }
 
@@ -214,7 +236,7 @@ void Model::CreateVertexList()
 {
 	int x = 0;
 
-	for (int i = 0; i < vertexIndexes.size(); i++)
+	for( unsigned int i = 0; i < vertexIndexes.size(); i++)
 	{
 		if (i == 2960)
 			int y = 0;
@@ -225,8 +247,8 @@ void Model::CreateVertexList()
 		vertex.pos = vertices[vertexIndexes[i]-1];
 		vertex.normal = normals[normalIndexes[i]-1];
 		vertex.uv = uvs[uvIndexes[i]-1];
-		vertex.binormal = DirectX::XMFLOAT3{ 0,0,0 };
-		vertex.tangent = DirectX::XMFLOAT3{ 0,0,0 };
+		/*vertex.binormal = DirectX::XMFLOAT3{ 0,0,0 };
+		vertex.tangent = DirectX::XMFLOAT3{ 0,0,0 };*/
 
 		vertexList.push_back(vertex);
 	}
@@ -236,81 +258,81 @@ void Model::CreateVertexList()
 void Model::CalculateVectors()
 {
 	
-	unsigned int index = 0;
-	TempVertex vertex1; 
-	TempVertex vertex2;
-	TempVertex vertex3;
-	Vector tangent;
-	Vector binormal;
-	Vector normal;
-	
-	for (unsigned int i = 0; i <vertexList.size() / 3; i++)
-	{
-		vertex1.x = vertexList[index].pos.x;
-		vertex1.y = vertexList[index].pos.y;
-		vertex1.z = vertexList[index].pos.z;
-		vertex1.tu = vertexList[index].uv.x;
-		vertex1.tv = vertexList[index].uv.y;
-		vertex1.nx = vertexList[index].normal.x;
-		vertex1.ny = vertexList[index].normal.y;
-		vertex1.nz = vertexList[index].normal.z;
-		index++;
+	//unsigned int index = 0;
+	//TempVertex vertex1; 
+	//TempVertex vertex2;
+	//TempVertex vertex3;
+	//Vector tangent;
+	//Vector binormal;
+	//Vector normal;
+	//
+	//for (unsigned int i = 0; i <vertexList.size() / 3; i++)
+	//{
+	//	vertex1.x = vertexList[index].pos.x;
+	//	vertex1.y = vertexList[index].pos.y;
+	//	vertex1.z = vertexList[index].pos.z;
+	//	vertex1.tu = vertexList[index].uv.x;
+	//	vertex1.tv = vertexList[index].uv.y;
+	//	vertex1.nx = vertexList[index].normal.x;
+	//	vertex1.ny = vertexList[index].normal.y;
+	//	vertex1.nz = vertexList[index].normal.z;
+	//	index++;
 
-		vertex2.x = vertexList[index].pos.x;
-		vertex2.y = vertexList[index].pos.y;
-		vertex2.z = vertexList[index].pos.z;
-		vertex2.tu = vertexList[index].uv.x;
-		vertex2.tv = vertexList[index].uv.y;
-		vertex2.nx = vertexList[index].normal.x;
-		vertex2.ny = vertexList[index].normal.y;
-		vertex2.nz = vertexList[index].normal.z;
-		index++;
+	//	vertex2.x = vertexList[index].pos.x;
+	//	vertex2.y = vertexList[index].pos.y;
+	//	vertex2.z = vertexList[index].pos.z;
+	//	vertex2.tu = vertexList[index].uv.x;
+	//	vertex2.tv = vertexList[index].uv.y;
+	//	vertex2.nx = vertexList[index].normal.x;
+	//	vertex2.ny = vertexList[index].normal.y;
+	//	vertex2.nz = vertexList[index].normal.z;
+	//	index++;
 
-		vertex3.x = vertexList[index].pos.x;
-		vertex3.y = vertexList[index].pos.y;
-		vertex3.z = vertexList[index].pos.z;
-		vertex3.tu = vertexList[index].uv.x;
-		vertex3.tv = vertexList[index].uv.y;
-		vertex3.nx = vertexList[index].normal.x;
-		vertex3.ny = vertexList[index].normal.y;
-		vertex3.nz = vertexList[index].normal.z;
-		index++;
+	//	vertex3.x = vertexList[index].pos.x;
+	//	vertex3.y = vertexList[index].pos.y;
+	//	vertex3.z = vertexList[index].pos.z;
+	//	vertex3.tu = vertexList[index].uv.x;
+	//	vertex3.tv = vertexList[index].uv.y;
+	//	vertex3.nx = vertexList[index].normal.x;
+	//	vertex3.ny = vertexList[index].normal.y;
+	//	vertex3.nz = vertexList[index].normal.z;
+	//	index++;
 
-		CalculateTangentBinormal(vertex1, vertex2, vertex3, tangent, binormal);
-		CalculateNormal(tangent, binormal, normal);
-		vertexList[index - 1].normal.x = normal.x;
-		vertexList[index - 1].normal.y = normal.y;
-		vertexList[index - 1].normal.z = normal.z;
-		vertexList[index - 1].tangent.x = tangent.x;
-		vertexList[index - 1].tangent.y = tangent.y;
-		vertexList[index - 1].tangent.z = tangent.z;
-		vertexList[index - 1].binormal.x = binormal.x;
-		vertexList[index - 1].binormal.y = binormal.y;
-		vertexList[index - 1].binormal.z = binormal.z;
+	//	CalculateTangentBinormal(vertex1, vertex2, vertex3, tangent, binormal);
+	//	CalculateNormal(tangent, binormal, normal);
+	//	vertexList[index - 1].normal.x = normal.x;
+	//	vertexList[index - 1].normal.y = normal.y;
+	//	vertexList[index - 1].normal.z = normal.z;
+	//	vertexList[index - 1].tangent.x = tangent.x;
+	//	vertexList[index - 1].tangent.y = tangent.y;
+	//	vertexList[index - 1].tangent.z = tangent.z;
+	//	vertexList[index - 1].binormal.x = binormal.x;
+	//	vertexList[index - 1].binormal.y = binormal.y;
+	//	vertexList[index - 1].binormal.z = binormal.z;
 
-		vertexList[index - 2].normal.x = normal.x;
-		vertexList[index - 2].normal.y = normal.y;
-		vertexList[index - 2].normal.z = normal.z;
-		vertexList[index - 2].tangent.x = tangent.x;
-		vertexList[index - 2].tangent.y = tangent.y;
-		vertexList[index - 2].tangent.z = tangent.z;
-		vertexList[index - 2].binormal.x = binormal.x;
-		vertexList[index - 2].binormal.y = binormal.y;
-		vertexList[index - 2].binormal.z = binormal.z;
+	//	vertexList[index - 2].normal.x = normal.x;
+	//	vertexList[index - 2].normal.y = normal.y;
+	//	vertexList[index - 2].normal.z = normal.z;
+	//	vertexList[index - 2].tangent.x = tangent.x;
+	//	vertexList[index - 2].tangent.y = tangent.y;
+	//	vertexList[index - 2].tangent.z = tangent.z;
+	//	vertexList[index - 2].binormal.x = binormal.x;
+	//	vertexList[index - 2].binormal.y = binormal.y;
+	//	vertexList[index - 2].binormal.z = binormal.z;
 
-		vertexList[index - 3].normal.x = normal.x;
-		vertexList[index - 3].normal.y = normal.y;
-		vertexList[index - 3].normal.z = normal.z;
-		vertexList[index - 3].tangent.x = tangent.x;
-		vertexList[index - 3].tangent.y = tangent.y;
-		vertexList[index - 3].tangent.z = tangent.z;
-		vertexList[index - 3].binormal.x = binormal.x;
-		vertexList[index - 3].binormal.y = binormal.y;
-		vertexList[index - 3].binormal.z = binormal.z;
+	//	vertexList[index - 3].normal.x = normal.x;
+	//	vertexList[index - 3].normal.y = normal.y;
+	//	vertexList[index - 3].normal.z = normal.z;
+	//	vertexList[index - 3].tangent.x = tangent.x;
+	//	vertexList[index - 3].tangent.y = tangent.y;
+	//	vertexList[index - 3].tangent.z = tangent.z;
+	//	vertexList[index - 3].binormal.x = binormal.x;
+	//	vertexList[index - 3].binormal.y = binormal.y;
+	//	vertexList[index - 3].binormal.z = binormal.z;
 
 
 
-	}
+	/*}*/
 
 
 

@@ -18,7 +18,7 @@ using namespace std;
 #include "SceneRenderer.h"
 using namespace DirectX;
 #include "XTime.h"
-#include "D3dclass.h"
+
 //#define BACKBUFFER_WIDTH	100
 //#define BACKBUFFER_HEIGHT	100
 
@@ -75,6 +75,8 @@ DEMO_APP::DEMO_APP(HINSTANCE hinst, WNDPROC proc)
 	d3dclass.setSwapChain(window);
 	d3dclass.setView();
 	d3dclass.createInputLayout();
+	d3dclass.setDepthStuff();
+	
 	scene.Resources = d3dclass;
 	scene.createBuffers();
 	scene.createConstantBuffers();

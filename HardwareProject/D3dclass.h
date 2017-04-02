@@ -19,7 +19,7 @@ using namespace DirectX;
 	public:
 		D3dclass();
 		~D3dclass();
-
+		bool DebugMode =false;
 
 		ID3D11Device *device;
 		ID3D11DeviceContext *context;
@@ -34,7 +34,7 @@ using namespace DirectX;
 		ID3D11DepthStencilView* dsv;
 		ID3D11PixelShader *pixelShader;
 		ID3D11VertexShader *vertexShader;
-
+	
 		ID3D11DepthStencilState* m_depthStencilState;
 		ID3D11DepthStencilView* m_depthStencilView;
 		ID3D11Texture2D* m_depthStencilBuffer;

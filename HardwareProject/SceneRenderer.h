@@ -15,7 +15,7 @@ class SceneRenderer
 	};
 public:
 
-
+	XTime timer;
 	SceneRenderer();
 	~SceneRenderer();
 	D3dclass Resources;
@@ -26,7 +26,8 @@ public:
 	bool	m_loadingComplete;
 	float cameraSpeed = 1.0f;
 	bool tracking;
-	float mouseSpeed = 0.025f;
+	float mouseSpeed = 0.020f;
+	float mouseSensitivity = 50.0f;
 	bool	buttons[256];
 	float currMousePos[2];
 	float preMousePos[2];
@@ -38,6 +39,7 @@ public:
 	void UpdateCamera(MSG msg, XTime timer);
 
 	void drawModel( ModelBuffers model);
+	void debugRender(ModelBuffers model);
 
 };
 

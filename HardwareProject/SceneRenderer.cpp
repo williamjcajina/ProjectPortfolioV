@@ -28,10 +28,10 @@ void SceneRenderer::createBuffers()
 	
 	static const VertexPositionColor floorVertices[] =
 	{
-		{ XMFLOAT3(-5, 0.0f, 5), XMFLOAT3(1.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(5, 0.0f,  5), XMFLOAT3(0.0f, 1.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-5,  0.0f, -5), XMFLOAT3(0.0f, 0.0f, 1.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(5,  0.0f, -5), XMFLOAT3(1.0f, 1.0f, 1.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) }
+		{ XMFLOAT3(-5, 0.0f, 5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(5, 0.0f,  5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(-5,  0.0f, -5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(5,  0.0f, -5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) }
 
 
 	};
@@ -71,34 +71,33 @@ void SceneRenderer::createBuffers()
 
 	Models.push_back(floor);
 
-	Model test;
-	test.loadModelFBX("Teddy_Idle.fbx");
+	
 
 
 	auto creatteBuffers();
 	{
 		ModelBuffers modelName;
 
-		modelName.name = "helicopter2.obj";
-		
+		/*modelName.name = "helicopter2.obj";*/
+		modelName.name = "Teddy_Idle.fbx"; 
 		Models.push_back(modelName);
 		
 
 
-		for (int i = 0; i <Models.size(); i++)
+		for (unsigned int i = 0; i <Models.size(); i++)
 		{
 
 
 			Model model;
 			if (Models[i].name == nullptr)
 				continue;
+			if(!model.loadModelFBX(Models[i].name))
 			model.loadModel(Models[i].name);
 		
 
 			const int  vertsNumber = model.vertexList.size();
 			VertexPositionColor* modelVertices = new VertexPositionColor[vertsNumber];
-			srand(0);
-
+			
 
 			for (int i = 0; i < vertsNumber; i++)
 			{
@@ -123,7 +122,7 @@ void SceneRenderer::createBuffers()
 
 
 			unsigned short* modelIndices = new unsigned short[model.vertexIndexes.size() - 1];
-			for (int i = 0; i < model.vertexIndexes.size(); i++)
+			for (unsigned int i = 0; i < model.vertexIndexes.size(); i++)
 			{
 				modelIndices[i] = i;
 
@@ -141,7 +140,7 @@ void SceneRenderer::createBuffers()
 			DirectX::XMMATRIX identity = DirectX::XMMatrixIdentity();
 			DirectX::XMMATRIX scaling;
 
-				scaling = DirectX::XMMatrixScaling(0.1, 0.1, 0.1);
+				scaling = DirectX::XMMatrixScaling(0.001f, 0.001f, 0.001f);
 
 			/*DirectX::XMMATRIX translate;
 			if (i == 3)
@@ -216,6 +215,7 @@ void SceneRenderer::setCamera()
 
 void SceneRenderer::Render()
 {
+	
 	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_camera))));
 
 	
@@ -229,14 +229,15 @@ void SceneRenderer::Render()
 	
 	
 	float color[4];
+	
 
-	color[0] = 0.2;
-	color[1] = 0.1;
-	color[2] = 0.5;
-	color[3] = 1;
+	color[0] = 220.0f/255.0f;
+	color[1] = 228.0f/255.0f;
+	color[2] = 1.0f;
+	color[3] = 1.0f;
 	
 	
-	
+	context->OMSetRenderTargets(1, &Resources.rtv, Resources.m_depthStencilView);
 
 	context->ClearRenderTargetView(Resources.rtv, color);
 	context->ClearDepthStencilView(Resources.m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -246,15 +247,17 @@ void SceneRenderer::Render()
 	context->PSSetShader(Resources.pixelShader, nullptr, 0);
 	context->VSSetConstantBuffers(0, 1, &m_constantBuffer);
 	
-	drawModel(Models[0]);
-	drawModel(Models[1]);
+	
+	/*drawModel(Models[1]);
+	drawModel(Models[0]);*/
+	debugRender(Models[1]);
 
 	
 }
 
 void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 {
-	const float delta_time = timer.SmoothDelta();
+	const float delta_time = (float)timer.SmoothDelta();
 	bool mLClick;
 	if (msg.message == WM_KEYDOWN)
 		buttons[msg.wParam] = true;
@@ -319,8 +322,22 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 		{
 			float dx = currMousePos[0] - preMousePos[0];
 			float dy = currMousePos[1] - preMousePos[1];
-			dx *= 0.5f;
-			dy *= 0.5f;
+			
+			if (abs(dx) < 10)
+				dx = 0;
+			if (abs(dy) < 10)
+				dy = 0;
+
+		/*	if (dx > 0)
+				dx = mouseSensitivity;
+			if (dx < 0)
+				dx = -mouseSensitivity;
+
+			if (dy > 0)
+				dy = mouseSensitivity;
+			if (dy < 0)
+				dy = -mouseSensitivity;
+*/
 			XMFLOAT4 pos = XMFLOAT4(m_camera._41, m_camera._42, m_camera._43, m_camera._44);
 
 			m_camera._41 = 0;
@@ -359,6 +376,27 @@ void SceneRenderer::drawModel(ModelBuffers model)
 	UINT offset = 0;
 	m_constantBufferData.model = model.worldMatrix;
 	
+	context->Map(m_constantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &mapSubRes);
+	memcpy(mapSubRes.pData, &m_constantBufferData, sizeof(ModelViewProjectionConstantBuffer));
+	context->Unmap(m_constantBuffer, NULL);
+
+	context->IASetIndexBuffer(model.m_model_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+	context->IASetVertexBuffers(0, 1, &model.m_model_vertexBuffer, &stride, &offset);
+	context->DrawIndexed(model.m_model_indexCount, 0, 0);
+	Resources.swapChain->Present(0, 0);
+}
+
+void SceneRenderer::debugRender(ModelBuffers model)
+{
+	/*Resources.context->PSSetShader(Resources.debugPixelShader, nullptr, 0);*/
+
+	auto context = Resources.context;
+	D3D11_MAPPED_SUBRESOURCE mapSubRes;
+	ZeroMemory(&mapSubRes, sizeof(mapSubRes));
+	UINT stride = sizeof(VertexPositionColor);
+	UINT offset = 0;
+	m_constantBufferData.model = model.worldMatrix;
+
 	context->Map(m_constantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &mapSubRes);
 	memcpy(mapSubRes.pData, &m_constantBufferData, sizeof(ModelViewProjectionConstantBuffer));
 	context->Unmap(m_constantBuffer, NULL);

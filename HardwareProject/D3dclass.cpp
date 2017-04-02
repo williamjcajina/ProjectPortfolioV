@@ -13,24 +13,30 @@ D3dclass::~D3dclass()
 
 void D3dclass::setSwapChain(HWND window)
 {
-	DXGI_SWAP_CHAIN_DESC dscd;
-	dscd.BufferCount = 1;
-	dscd.BufferDesc.Width = SCREEN_WIDTH;
-	dscd.BufferDesc.Height = SCREEN_HEIGHT;
-	dscd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	dscd.BufferDesc.RefreshRate.Numerator = 0;
-	dscd.BufferDesc.RefreshRate.Denominator = 1;
-	dscd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	dscd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_PROGRESSIVE;
-	dscd.BufferDesc.Scaling = DXGI_MODE_SCALING_CENTERED;
-	dscd.OutputWindow = window;
-	dscd.SampleDesc.Count = 1;
-	dscd.SampleDesc.Quality = 0;
-	dscd.Windowed = TRUE;
-	dscd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	dscd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+	
+	D3D_FEATURE_LEVEL featureLevel;
+	DXGI_SWAP_CHAIN_DESC swapChainDesc;
+	featureLevel = D3D_FEATURE_LEVEL_11_0;
+	ZeroMemory(&swapChainDesc, sizeof(swapChainDesc));
+	swapChainDesc.BufferCount = 1;
+	swapChainDesc.BufferDesc.Width = SCREEN_WIDTH;
+	swapChainDesc.BufferDesc.Height = SCREEN_HEIGHT;
+	swapChainDesc.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	swapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
+	swapChainDesc.BufferDesc.RefreshRate.Denominator = 1;
+	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+	swapChainDesc.OutputWindow = window;
+	swapChainDesc.SampleDesc.Count = 1;
+	swapChainDesc.SampleDesc.Quality = 0;
+	swapChainDesc.Windowed = true;
+	swapChainDesc.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+	swapChainDesc.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+	swapChainDesc.Flags = 0;
+	HRESULT hr= D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, &featureLevel, 1,
+		D3D11_SDK_VERSION, &swapChainDesc, &swapChain, &device, NULL, &context);
 
-	HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, 0, D3D11_SDK_VERSION, &dscd, &swapChain, &device, NULL, &context);
+	
 }
 
 void D3dclass::setView()
@@ -48,7 +54,7 @@ void D3dclass::setView()
 
 	device->CreateRenderTargetView(pBuffer, NULL, &rtv);
 	context->RSSetViewports(1, &viewPort);
-	context->OMSetRenderTargets(1, &rtv, 0);
+	/*context->OMSetRenderTargets(1, &rtv, 0);*/
 	pBuffer->Release();
 }
 
@@ -58,6 +64,7 @@ void D3dclass::createInputLayout()
 	HRESULT hr;
 	hr =device->CreateVertexShader(VertexShader, sizeof(VertexShader), NULL, &vertexShader);
 	hr =device->CreatePixelShader(PixelShader, sizeof(PixelShader), NULL, &pixelShader);
+	
 
 	D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
 	{
@@ -130,7 +137,7 @@ void D3dclass::setDepthStuff()
 
 	
 	device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
-	context->OMSetRenderTargets(1, &rtv, m_depthStencilView);
+	/*context->OMSetRenderTargets(1, &rtv, m_depthStencilView)*/;
 	
 	
 	
@@ -141,15 +148,15 @@ void D3dclass::setDepthStuff()
 	rasterDesc.DepthBias = 0;
 	rasterDesc.DepthBiasClamp = 0.0f;
 	rasterDesc.DepthClipEnable = true;
-	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.FillMode = D3D11_FILL_WIREFRAME;
 	rasterDesc.FrontCounterClockwise = false;
 	rasterDesc.MultisampleEnable = false;
 	rasterDesc.ScissorEnable = false;
 	rasterDesc.SlopeScaledDepthBias = 0.0f;
 
 	
-	device->CreateRasterizerState(&rasterDesc, &m_rasterState);
-	context->RSSetState(m_rasterState);
+	result =device->CreateRasterizerState(&rasterDesc, &m_rasterState);
+	
 }
 
 

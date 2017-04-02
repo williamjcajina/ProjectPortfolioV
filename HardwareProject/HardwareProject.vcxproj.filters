@@ -19,6 +19,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{1d14fced-5d97-4f28-8797-83169a2895bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ModelImporter">
+      <UniqueIdentifier>{e273f83e-8257-49df-baff-86f1e221e3c9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -34,7 +37,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Model.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>ModelImporter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -54,14 +57,14 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Model.h">
-      <Filter>Header Files</Filter>
+      <Filter>ModelImporter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="PixelShader.hlsl">
+    <FxCompile Include="VertexShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="VertexShader.hlsl">
+    <FxCompile Include="PixelShader.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

@@ -1,6 +1,6 @@
 #pragma once
 #include "D3dclass.h"
-#include<vector>
+
 #include "Model.h"
 #include "ShaderStructures.h"
 #include <string>
@@ -19,8 +19,8 @@ public:
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 uv;
 		DirectX::XMFLOAT3 normal;
-		DirectX::XMFLOAT3 tangent;
-		DirectX::XMFLOAT3 binormal;
+		/*DirectX::XMFLOAT3 tangent;
+		DirectX::XMFLOAT3 binormal;*/
 	};
 	struct TempVertex
 	{
