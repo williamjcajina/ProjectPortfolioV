@@ -6,6 +6,11 @@
 #else
 #define FBX_READER_API __declspec(dllimport)
 #endif
+#include <vector>
 
 
-FBX_READER_API int getnumber(const char * filename);
+struct vect
+{
+	float x, y, z;
+};
+FBX_READER_API bool loadFBX(const char * filename, std::vector<vect> vertices);

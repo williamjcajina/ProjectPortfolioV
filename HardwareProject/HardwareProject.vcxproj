@@ -21,12 +21,14 @@
   <ItemGroup>
     <ClCompile Include="D3dclass.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="SceneRenderer.cpp" />
     <ClCompile Include="XTime.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\FBX_exporter\FBX_Exporter.h" />
     <ClInclude Include="D3dclass.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="SceneRenderer.h" />
     <ClInclude Include="ShaderStructures.h" />
     <ClInclude Include="XTime.h" />
@@ -49,6 +51,13 @@
     <ProjectReference Include="..\FBX_exporter\FBX_exporter.vcxproj">
       <Project>{dcf04544-35e1-493c-8a0f-e44af335947a}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="helicopter2.obj">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</DeploymentContent>
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E5F794B1-B297-417A-A4A4-D62E6CD0D230}</ProjectGuid>

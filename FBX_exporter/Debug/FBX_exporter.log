@@ -1,4 +1,8 @@
-﻿  FBX_exporter.cpp
-     Creating library C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.lib and object C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.exp
-  FBX_exporter.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.dll
-  FBX_exporter.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.pdb (Full PDB)
+﻿  dllmain.cpp
+  stdafx.cpp
+  FBX_exporter.cpp
+  Generating Code...
+c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(25): warning C4715: 'loadFBX': not all control paths return a value
+     Creating library C:\Users\William\Desktop\ProjectPortfolioV\Debug\FBX_exporter.lib and object C:\Users\William\Desktop\ProjectPortfolioV\Debug\FBX_exporter.exp
+  FBX_exporter.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\FBX_exporter.dll
+  FBX_exporter.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\FBX_exporter.pdb (Full PDB)

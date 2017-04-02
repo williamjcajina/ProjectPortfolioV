@@ -47,7 +47,8 @@ void D3dclass::setView()
 	viewPort.TopLeftY = 0;
 
 	device->CreateRenderTargetView(pBuffer, NULL, &rtv);
-
+	context->RSSetViewports(1, &viewPort);
+	context->OMSetRenderTargets(1, &rtv, 0);
 	pBuffer->Release();
 }
 
@@ -70,27 +71,85 @@ void D3dclass::createInputLayout()
 	
 }
 
-void D3dclass::setDepthStencilView()
+void D3dclass::setDepthStuff()
 {
-	CD3D11_TEXTURE2D_DESC depthStencilDesc(
-		DXGI_FORMAT_D24_UNORM_S8_UINT,
-		lround(SCREEN_WIDTH),
-		lround(SCREEN_HEIGHT),
-		1, 
-		1,
-		D3D11_BIND_DEPTH_STENCIL
-	);
+	D3D11_DEPTH_STENCIL_DESC depthStencilDesc;
+	D3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc;
+	D3D11_TEXTURE2D_DESC depthBufferDesc;
 
-	ID3D11Texture2D* depthStencil;
-	
-	device->CreateTexture2D(&depthStencilDesc,nullptr,&depthStencil);
-
-	CD3D11_DEPTH_STENCIL_VIEW_DESC depthStencilViewDesc(D3D11_DSV_DIMENSION_TEXTURE2D);
-	device->CreateDepthStencilView(depthStencil,&depthStencilViewDesc,&dsv);
-
+	ZeroMemory(&depthBufferDesc, sizeof(depthBufferDesc));
 
 	
+	depthBufferDesc.Width = SCREEN_WIDTH;
+	depthBufferDesc.Height = SCREEN_HEIGHT;
+	depthBufferDesc.MipLevels = 1;
+	depthBufferDesc.ArraySize = 1;
+	depthBufferDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthBufferDesc.SampleDesc.Count = 1;
+	depthBufferDesc.SampleDesc.Quality = 0;
+	depthBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+	depthBufferDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depthBufferDesc.CPUAccessFlags = 0;
+	depthBufferDesc.MiscFlags = 0;
+	HRESULT result = device->CreateTexture2D(&depthBufferDesc, NULL, &m_depthStencilBuffer);
 
+
+	ZeroMemory(&depthStencilDesc, sizeof(depthStencilDesc));
+
+	
+	depthStencilDesc.DepthEnable = true;
+	depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depthStencilDesc.DepthFunc = D3D11_COMPARISON_LESS;
+
+	depthStencilDesc.StencilEnable = true;
+	depthStencilDesc.StencilReadMask = 0xFF;
+	depthStencilDesc.StencilWriteMask = 0xFF;
+
+	
+	depthStencilDesc.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	// Stencil operations if pixel is back-facing.
+	depthStencilDesc.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	depthStencilDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	depthStencilDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+
+	result = device->CreateDepthStencilState(&depthStencilDesc, &m_depthStencilState);
+	context->OMSetDepthStencilState(m_depthStencilState, 1);
+	
+	ZeroMemory(&depthStencilViewDesc, sizeof(depthStencilViewDesc));
+
+
+	depthStencilViewDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilViewDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+	depthStencilViewDesc.Texture2D.MipSlice = 0;
+
+	
+	device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
+	context->OMSetRenderTargets(1, &rtv, m_depthStencilView);
+	
+	
+	
+	
+	D3D11_RASTERIZER_DESC rasterDesc;
+	rasterDesc.AntialiasedLineEnable = false;
+	rasterDesc.CullMode = D3D11_CULL_BACK;
+	rasterDesc.DepthBias = 0;
+	rasterDesc.DepthBiasClamp = 0.0f;
+	rasterDesc.DepthClipEnable = true;
+	rasterDesc.FillMode = D3D11_FILL_SOLID;
+	rasterDesc.FrontCounterClockwise = false;
+	rasterDesc.MultisampleEnable = false;
+	rasterDesc.ScissorEnable = false;
+	rasterDesc.SlopeScaledDepthBias = 0.0f;
+
+	
+	device->CreateRasterizerState(&rasterDesc, &m_rasterState);
+	context->RSSetState(m_rasterState);
 }
 
 

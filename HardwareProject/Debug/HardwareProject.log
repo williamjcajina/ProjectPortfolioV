@@ -1,18 +1,54 @@
-﻿  compilation header save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\HardwareProject\PixelShader.csh
-  compilation object save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\Debug\PixelShader.cso
-  compilation header save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\HardwareProject\VertexShader.csh
-  compilation object save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\Debug\VertexShader.cso
-  XTime.cpp
-  SceneRenderer.cpp
-c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(189): warning C4305: '=': truncation from 'double' to 'float'
-c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(190): warning C4305: '=': truncation from 'double' to 'float'
-c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(244): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(244): warning C4244: 'initializing': conversion from 'double' to 'const float', possible loss of data
-c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(303): warning C4244: '=': conversion from 'LONG' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(304): warning C4244: '=': conversion from 'LONG' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(245): warning C4101: 'mLClick': unreferenced local variable
-  main.cpp
-  D3dclass.cpp
-  Generating Code...
-  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.exe
-  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.pdb (Full PDB)
+﻿  Model.cpp
+c:\users\william\desktop\projectportfoliov\hardwareproject\model.cpp(218): warning C4018: '<': signed/unsigned mismatch
+c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory0(737): error C3074: an array cannot be initialized with a parenthesized initializer
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory0(857): note: see reference to function template instantiation 'void std::allocator<_Ty>::construct<_Objty,float(&)[3]>(_Objty (*),float (&)[3])' being compiled
+          with
+          [
+              _Ty=float [3],
+              _Objty=float [3]
+          ]
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory0(857): note: see reference to function template instantiation 'void std::allocator<_Ty>::construct<_Objty,float(&)[3]>(_Objty (*),float (&)[3])' being compiled
+          with
+          [
+              _Ty=float [3],
+              _Objty=float [3]
+          ]
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory0(996): note: see reference to function template instantiation 'void std::allocator_traits<_Alloc>::construct<_Ty,float(&)[3]>(std::allocator<_Ty> &,_Objty (*),float (&)[3])' being compiled
+          with
+          [
+              _Alloc=std::allocator<float [3]>,
+              _Ty=float [3],
+              _Objty=float [3]
+          ]
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\xmemory0(995): note: see reference to function template instantiation 'void std::allocator_traits<_Alloc>::construct<_Ty,float(&)[3]>(std::allocator<_Ty> &,_Objty (*),float (&)[3])' being compiled
+          with
+          [
+              _Alloc=std::allocator<float [3]>,
+              _Ty=float [3],
+              _Objty=float [3]
+          ]
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\vector(1284): note: see reference to function template instantiation 'void std::_Wrap_alloc<std::allocator<_Ty>>::construct<_Ty,float(&)[3]>(_Ty (*),float (&)[3])' being compiled
+          with
+          [
+              _Ty=float [3]
+          ]
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\vector(1283): note: see reference to function template instantiation 'void std::_Wrap_alloc<std::allocator<_Ty>>::construct<_Ty,float(&)[3]>(_Ty (*),float (&)[3])' being compiled
+          with
+          [
+              _Ty=float [3]
+          ]
+  c:\program files (x86)\microsoft visual studio 14.0\vc\include\vector(1276): note: while compiling class template member function 'void std::vector<float [3],std::allocator<_Ty>>::push_back(const float (&)[3])'
+          with
+          [
+              _Ty=float [3]
+          ]
+  c:\users\william\desktop\projectportfoliov\hardwareproject\model.cpp(155): note: see reference to function template instantiation 'void std::vector<float [3],std::allocator<_Ty>>::push_back(const float (&)[3])' being compiled
+          with
+          [
+              _Ty=float [3]
+          ]
+  c:\users\william\desktop\projectportfoliov\hardwareproject\model.cpp(153): note: see reference to class template instantiation 'std::vector<float [3],std::allocator<_Ty>>' being compiled
+          with
+          [
+              _Ty=float [3]
+          ]
