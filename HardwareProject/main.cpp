@@ -3,7 +3,7 @@
 #include <iostream>
 #include <ctime>
 #include "XTime.h"
-#include <vld.h>
+
 using namespace std;
 
 #include "D3dclass.h"

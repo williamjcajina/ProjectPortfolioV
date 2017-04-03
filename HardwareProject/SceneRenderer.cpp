@@ -67,7 +67,7 @@ void SceneRenderer::createBuffers()
 		DirectX::XMMATRIX identity = DirectX::XMMatrixIdentity();
 		DirectX::XMMATRIX scaling;
 
-		scaling = DirectX::XMMatrixScaling(1, 1, 1);
+		scaling = DirectX::XMMatrixScaling(100, 100, 100);
 		DirectX::XMMATRIX transform = DirectX::XMMatrixMultiply(scaling, identity);
 		XMStoreFloat4x4(&floor.worldMatrix, transform);
 
@@ -81,41 +81,55 @@ void SceneRenderer::createBuffers()
 
 
 	auto createPyramid(); {
-		ModelBuffers floor;
+		ModelBuffers pyramid;
 
-		static const VertexPositionColor floorVertices[] =
+		static const VertexPositionColor pyramidVertices[] =
 		{
-			{ XMFLOAT3(-5, 0.0f, 5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3(5, 0.0f,  5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3(-5,  0.0f, -5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3(5,  0.0f, -5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) }
+			{ XMFLOAT3(-0.5f, 0.0f, 0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(0.5, 0.0f,  0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(-0.5,  0.0f, -0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(0.5,  0.0f, -0.5), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(0.0,  1.0f, 0.0), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) }
 
 
 		};
 
 		D3D11_SUBRESOURCE_DATA vertexBufferData1 = { 0 };
-		vertexBufferData1.pSysMem = floorVertices;
+		vertexBufferData1.pSysMem = pyramidVertices;
 		vertexBufferData1.SysMemPitch = 0;
 		vertexBufferData1.SysMemSlicePitch = 0;
-		CD3D11_BUFFER_DESC vertexBufferDesc1(sizeof(floorVertices), D3D11_BIND_VERTEX_BUFFER);
-		HRESULT hr = Resources.device->CreateBuffer(&vertexBufferDesc1, &vertexBufferData1, &floor.m_model_vertexBuffer);
+		CD3D11_BUFFER_DESC vertexBufferDesc1(sizeof(pyramidVertices), D3D11_BIND_VERTEX_BUFFER);
+		HRESULT hr = Resources.device->CreateBuffer(&vertexBufferDesc1, &vertexBufferData1, &pyramid.m_model_vertexBuffer);
 
 
 
-		static const unsigned short floorIndices[] =
+		static const unsigned short pyramidIndices[] =
 		{
-			0,3,2,0,1,3
+			//base
+			0,1,2,
+			1,3,2,
+
+			//
+		   0,4,1,
+		   2,4,0,
+		 
+		   1,4,3,
+		   3,4,2,
+
+
+
+
 
 		};
 
-		floor.m_model_indexCount = ARRAYSIZE(floorIndices);
+		pyramid.m_model_indexCount = ARRAYSIZE(pyramidIndices);
 
 		D3D11_SUBRESOURCE_DATA indexBufferData1 = { 0 };
-		indexBufferData1.pSysMem = floorIndices;
+		indexBufferData1.pSysMem = pyramidIndices;
 		indexBufferData1.SysMemPitch = 0;
 		indexBufferData1.SysMemSlicePitch = 0;
-		CD3D11_BUFFER_DESC indexBufferDesc1(sizeof(floorIndices), D3D11_BIND_INDEX_BUFFER);
-		hr = Resources.device->CreateBuffer(&indexBufferDesc1, &indexBufferData1, &floor.m_model_indexBuffer);
+		CD3D11_BUFFER_DESC indexBufferDesc1(sizeof(pyramidIndices), D3D11_BIND_INDEX_BUFFER);
+		hr = Resources.device->CreateBuffer(&indexBufferDesc1, &indexBufferData1, &pyramid.m_model_indexBuffer);
 
 
 		DirectX::XMMATRIX identity = DirectX::XMMatrixIdentity();
@@ -123,12 +137,11 @@ void SceneRenderer::createBuffers()
 
 		scaling = DirectX::XMMatrixScaling(1, 1, 1);
 		DirectX::XMMATRIX transform = DirectX::XMMatrixMultiply(scaling, identity);
-		XMStoreFloat4x4(&floor.worldMatrix, transform);
+		XMStoreFloat4x4(&pyramid.worldMatrix, identity);
 
 
-		Models.push_back(floor);
-
-
+		Models.push_back(pyramid);
+		
 	}
 
 
@@ -142,6 +155,7 @@ void SceneRenderer::createBuffers()
 		/*modelName.name = "helicopter2.obj";*/
 		modelName.name = "Teddy_Idle.fbx"; 
 		Models.push_back(modelName);
+		
 		
 
 
@@ -198,28 +212,21 @@ void SceneRenderer::createBuffers()
 			CD3D11_BUFFER_DESC indexBufferDesc(sizeof(unsigned short)*Models[i].m_model_indexCount, D3D11_BIND_INDEX_BUFFER);
 			Resources.device->CreateBuffer(&indexBufferDesc, &indexBufferData, &Models[i].m_model_indexBuffer);
 
-			delete[] modelVertices;
-			
-			DirectX::XMMATRIX identity = DirectX::XMMatrixIdentity();
-			DirectX::XMMATRIX scaling;
-
-				scaling = DirectX::XMMatrixScaling(0.001f, 0.001f, 0.001f);
-
-			/*DirectX::XMMATRIX translate;
-			if (i == 3)
-				translate = DirectX::XMMatrixTranslation(5.0, 0.0f, 0.0f);
-			else
-				translate = DirectX::XMMatrixTranslation(i * 40, 0.0f, 0.0f);*/
-
-			DirectX::XMMATRIX transform = DirectX::XMMatrixMultiply(scaling, identity);
-			/*transform = DirectX::XMMatrixMultiply(translate, transform);*/
-
-			/*transform = DirectX::XMMatrixTranspose(transform);*/
-
-
-			XMStoreFloat4x4(&Models[i].worldMatrix, identity);
 		
+				
 
+			
+
+			
+
+
+			XMStoreFloat4x4(&Models[i].worldMatrix, DirectX::XMMatrixIdentity());
+		
+			if (model.isFBX)
+			{
+				Models[i].joints = model.joints;
+				Models[i].isFBX = true;
+			}
 		}
 	}
 
@@ -260,7 +267,7 @@ void SceneRenderer::setCamera()
 	}
 
 
-	XMMATRIX perspectiveMatrix = XMMatrixPerspectiveFovLH(fovAngleY, aspectRatio, 0.01f, 100.0f);
+	XMMATRIX perspectiveMatrix = XMMatrixPerspectiveFovLH(fovAngleY, aspectRatio, 0.01f, 1000.0f);
 	XMMATRIX orientation = DirectX::XMMatrixIdentity();
 	
 
@@ -275,46 +282,54 @@ void SceneRenderer::setCamera()
 
 	XMStoreFloat4x4(&m_camera, XMMatrixInverse(nullptr, XMMatrixLookAtLH(eye, at, up)));
 	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtLH(eye, at, up)));
+	
+	XMMATRIX translation = XMMatrixTranslation(0.0f, 50.0f, -100.0f);
+	XMMATRIX temp_camera = XMLoadFloat4x4(&m_camera);
+	XMMATRIX result = XMMatrixMultiply(translation, temp_camera);
+	XMStoreFloat4x4(&m_camera, result);
 }
 
 void SceneRenderer::Render()
 {
 	
-	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_camera))));
-
+	
 	
 	auto context = Resources.context;
 
 	
+	context->OMSetRenderTargets(1, &Resources.rtv, Resources.m_depthStencilView);
 
+	float color[4];
+
+
+	color[0] = 220.0f / 255.0f;
+	color[1] = 228.0f / 255.0f;
+	color[2] = 1.0f;
+	color[3] = 1.0f;
+	context->ClearRenderTargetView(Resources.rtv, color);
+	context->ClearDepthStencilView(Resources.m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	//context->OMSetRenderTargets(1, &Resources.rtv, Resources.dsv);
 
 	
+	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_camera))));
+
 	
-	float color[4];
 	
 
-	color[0] = 220.0f/255.0f;
-	color[1] = 228.0f/255.0f;
-	color[2] = 1.0f;
-	color[3] = 1.0f;
-	
-	
-	context->OMSetRenderTargets(1, &Resources.rtv, Resources.m_depthStencilView);
-
-	context->ClearRenderTargetView(Resources.rtv, color);
-	context->ClearDepthStencilView(Resources.m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
 	context->IASetInputLayout(Resources.layout);
 	context->VSSetShader(Resources.vertexShader, nullptr, 0);
-	context->PSSetShader(Resources.pixelShader, nullptr, 0);
+	
 	context->VSSetConstantBuffers(0, 1, &m_constantBuffer);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	
-	
-	/*drawModel(Models[1]);
-	drawModel(Models[0]);*/
-	debugRender(Models[1]);
+	/*drawModel(Models[2]);*/
+	debugRender(Models[2]);
+	drawModel(Models[0]);
+	/*drawJoint(Models[2].joints[2]);*/
+
+	/*debugRender(Models[1]);*/
 
 	
 }
@@ -433,9 +448,33 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 
 void SceneRenderer::drawJoint(JointData joint)
 {
+	UINT stride = sizeof(VertexPositionColor);
+	UINT offset = 0;
 	auto context = Resources.context;
 	
+	DirectX::XMMATRIX scaling = DirectX::XMMatrixScaling(3*joint.scale.x, 3*joint.scale.y, 3*joint.scale.z);
+
 	
+	XMMATRIX translation = DirectX::XMMatrixTranslation(-joint.translation.x, -joint.translation.y, -joint.translation.z);
+	
+	XMMATRIX result = XMMatrixMultiply(translation, DirectX::XMMatrixIdentity());
+	/*XMMATRIX rotation =DirectX::rota
+	*/
+	result = DirectX::XMMatrixTranspose(result);
+	result = XMMatrixMultiply(result, scaling);
+	
+	
+	
+	XMStoreFloat4x4(&Models[1].worldMatrix, result);
+
+  
+
+	context->IASetIndexBuffer(Models[1].m_model_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+	context->IASetVertexBuffers(0, 1, &Models[1].m_model_vertexBuffer, &stride, &offset);
+
+
+
+	drawModel(Models[1]);
 
 
 }
@@ -445,8 +484,9 @@ void SceneRenderer::updateConstanBufferModel(DirectX::XMFLOAT4X4 model)
 	auto context = Resources.context;
 	D3D11_MAPPED_SUBRESOURCE mapSubRes;
 	ZeroMemory(&mapSubRes, sizeof(mapSubRes));
-
+	mapSubRes.pData = 0;
 	m_constantBufferData.model = model;
+
 
 	context->Map(m_constantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &mapSubRes);
 	memcpy(mapSubRes.pData, &m_constantBufferData, sizeof(ModelViewProjectionConstantBuffer));
@@ -456,12 +496,17 @@ void SceneRenderer::updateConstanBufferModel(DirectX::XMFLOAT4X4 model)
 
 void SceneRenderer::drawModel(ModelBuffers model)
 {
+	
 	auto context = Resources.context;
+	/*context->RSSetState(0);*/
+	context->RSSetState(0);
 	updateConstanBufferModel(model.worldMatrix);
+	context->PSSetShader(Resources.pixelShader, nullptr, 0);
 	UINT stride = sizeof(VertexPositionColor);
 	UINT offset = 0;
 	context->IASetIndexBuffer(model.m_model_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	context->IASetVertexBuffers(0, 1, &model.m_model_vertexBuffer, &stride, &offset);
+
 	context->DrawIndexed(model.m_model_indexCount, 0, 0);
 	Resources.swapChain->Present(0, 0);
 }
@@ -477,6 +522,17 @@ void SceneRenderer::debugRender(ModelBuffers model)
 	context->IASetIndexBuffer(model.m_model_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	context->IASetVertexBuffers(0, 1, &model.m_model_vertexBuffer, &stride, &offset);
 	context->DrawIndexed(model.m_model_indexCount, 0, 0);
-	Resources.swapChain->Present(0, 0);
-	/*context->RSSetState(0);*/
+	
+	if (!model.isFBX)
+		return;
+	
+	for (int i = 0; i < model.joints.size(); i++)
+	{
+		drawJoint(model.joints[i]);
+		Resources.swapChain->Present(0, 0);
+		context->RSSetState(0);
+	}
+	
+	
+	
 }

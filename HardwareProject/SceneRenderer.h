@@ -11,6 +11,8 @@ class SceneRenderer
 		unsigned int m_model_indexCount;
 		DirectX::XMFLOAT4X4 worldMatrix;
 		unsigned int m_model_vertexCount;
+		std::vector<JointData> joints;
+		bool isFBX;
 		const char* name = nullptr;
 	};
 public:
@@ -24,7 +26,7 @@ public:
 	ModelViewProjectionConstantBuffer	m_constantBufferData;
 	DirectX::XMFLOAT4X4 m_camera;
 	bool	m_loadingComplete;
-	float cameraSpeed = 1.0f;
+	float cameraSpeed = 100.0f;
 	bool tracking;
 	float mouseSpeed = 0.020f;
 	float mouseSensitivity = 50.0f;

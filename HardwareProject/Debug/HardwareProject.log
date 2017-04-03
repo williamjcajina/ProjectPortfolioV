@@ -1,6 +1,7 @@
 ﻿  SceneRenderer.cpp
-c:\users\william\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(383): warning C4244: '=': conversion from 'LONG' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(384): warning C4244: '=': conversion from 'LONG' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(325): warning C4101: 'mLClick': unreferenced local variable
-  HardwareProject.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\HardwareProject.exe
-  HardwareProject.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\HardwareProject.pdb (Full PDB)
+c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(398): warning C4244: '=': conversion from 'LONG' to 'float', possible loss of data
+c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(399): warning C4244: '=': conversion from 'LONG' to 'float', possible loss of data
+c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(340): warning C4101: 'mLClick': unreferenced local variable
+c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(529): warning C4018: '<': signed/unsigned mismatch
+  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.exe
+  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.pdb (Full PDB)

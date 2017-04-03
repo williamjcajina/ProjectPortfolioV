@@ -263,6 +263,7 @@ FBX_READER_API void processData(FbxNode* node,std::vector<Vertex> &vertices, std
 			for (int i = 0; i < node->GetChildCount(); ++i)
 			{
 				processData(node->GetChild(i), vertices,vertexIndexes);
+				
 			}
 
 
@@ -336,6 +337,7 @@ FBX_READER_API void processJoints(FbxNode * node)
 			currCluster->GetTransformLinkMatrix(transformLinkMatrix);
 			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
 
+			
 			joints[currJointIndex].mGlobalBindposeInverse = globalBindposeInverseMatrix;
 			joints[currJointIndex].mNode = currCluster->GetLink();
 		}
@@ -369,8 +371,11 @@ FBX_READER_API void exportJoints(std::vector<JointData> &jef)
 		JointData j;
 		j.parentIndex = joints[i].mParentIndex;
 		
+
+		
 		FbxVector4 rot = joints[i].mGlobalBindposeInverse.GetR();
 		FbxVector4 pos = joints[i].mGlobalBindposeInverse.GetT();
+		
 		FbxVector4 sca = joints[i].mGlobalBindposeInverse.GetS();
 	
 		j.rotation.x = rot.mData[0];

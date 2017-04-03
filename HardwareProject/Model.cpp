@@ -175,7 +175,7 @@ bool Model::loadModelFBX(const char * file_name)
 	}
 
 	
-
+	
 
 
 	return true;
