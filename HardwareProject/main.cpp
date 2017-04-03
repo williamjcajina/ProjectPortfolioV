@@ -3,7 +3,7 @@
 #include <iostream>
 #include <ctime>
 #include "XTime.h"
-
+#include <vld.h>
 using namespace std;
 
 #include "D3dclass.h"
@@ -97,7 +97,7 @@ bool DEMO_APP::Run(MSG msg)
 
 bool DEMO_APP::ShutDown()
 {
-	
+	scene.Resources.Shutdown();
 	
 	UnregisterClass( L"DirectXApplication", application ); 
 	return true;

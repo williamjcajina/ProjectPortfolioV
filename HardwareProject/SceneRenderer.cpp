@@ -20,58 +20,119 @@ SceneRenderer::SceneRenderer()
 
 SceneRenderer::~SceneRenderer()
 {
+	m_constantBuffer->Release();
+	Models[0].m_model_vertexBuffer->Release();
 }
 
 void SceneRenderer::createBuffers()
-{
+{   
+	auto createFloor(); {
 	ModelBuffers floor;
-	
-	static const VertexPositionColor floorVertices[] =
-	{
-		{ XMFLOAT3(-5, 0.0f, 5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(5, 0.0f,  5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(-5,  0.0f, -5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(5,  0.0f, -5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) }
+
+		static const VertexPositionColor floorVertices[] =
+		{
+			{ XMFLOAT3(-5, 0.0f, 5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(5, 0.0f,  5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(-5,  0.0f, -5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(5,  0.0f, -5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) }
 
 
-	};
+		};
 
-	D3D11_SUBRESOURCE_DATA vertexBufferData1 = { 0 };
-	vertexBufferData1.pSysMem = floorVertices;
-	vertexBufferData1.SysMemPitch = 0;
-	vertexBufferData1.SysMemSlicePitch = 0;
-	CD3D11_BUFFER_DESC vertexBufferDesc1(sizeof(floorVertices), D3D11_BIND_VERTEX_BUFFER);
-	HRESULT hr = Resources.device->CreateBuffer(&vertexBufferDesc1, &vertexBufferData1, &floor.m_model_vertexBuffer);
-
-	
-
-	static const unsigned short floorIndices[] =
-	{
-		0,3,2,0,1,3
-
-	};
-
-	floor.m_model_indexCount = ARRAYSIZE(floorIndices);
-
-	D3D11_SUBRESOURCE_DATA indexBufferData1 = { 0 };
-	indexBufferData1.pSysMem = floorIndices;
-	indexBufferData1.SysMemPitch = 0;
-	indexBufferData1.SysMemSlicePitch = 0;
-	CD3D11_BUFFER_DESC indexBufferDesc1(sizeof(floorIndices), D3D11_BIND_INDEX_BUFFER);
-	hr =Resources.device->CreateBuffer(&indexBufferDesc1, &indexBufferData1, &floor.m_model_indexBuffer);
+		D3D11_SUBRESOURCE_DATA vertexBufferData1 = { 0 };
+		vertexBufferData1.pSysMem = floorVertices;
+		vertexBufferData1.SysMemPitch = 0;
+		vertexBufferData1.SysMemSlicePitch = 0;
+		CD3D11_BUFFER_DESC vertexBufferDesc1(sizeof(floorVertices), D3D11_BIND_VERTEX_BUFFER);
+		HRESULT hr = Resources.device->CreateBuffer(&vertexBufferDesc1, &vertexBufferData1, &floor.m_model_vertexBuffer);
 
 
-	DirectX::XMMATRIX identity = DirectX::XMMatrixIdentity();
-	DirectX::XMMATRIX scaling;
 
-	scaling = DirectX::XMMatrixScaling(1, 1, 1);
-	DirectX::XMMATRIX transform = DirectX::XMMatrixMultiply(scaling, identity);
-	XMStoreFloat4x4(&floor.worldMatrix, transform);
+		static const unsigned short floorIndices[] =
+		{
+			0,3,2,0,1,3
+
+		};
+
+		floor.m_model_indexCount = ARRAYSIZE(floorIndices);
+
+		D3D11_SUBRESOURCE_DATA indexBufferData1 = { 0 };
+		indexBufferData1.pSysMem = floorIndices;
+		indexBufferData1.SysMemPitch = 0;
+		indexBufferData1.SysMemSlicePitch = 0;
+		CD3D11_BUFFER_DESC indexBufferDesc1(sizeof(floorIndices), D3D11_BIND_INDEX_BUFFER);
+		hr = Resources.device->CreateBuffer(&indexBufferDesc1, &indexBufferData1, &floor.m_model_indexBuffer);
 
 
-	Models.push_back(floor);
+		DirectX::XMMATRIX identity = DirectX::XMMatrixIdentity();
+		DirectX::XMMATRIX scaling;
 
-	
+		scaling = DirectX::XMMatrixScaling(1, 1, 1);
+		DirectX::XMMATRIX transform = DirectX::XMMatrixMultiply(scaling, identity);
+		XMStoreFloat4x4(&floor.worldMatrix, transform);
+
+
+		Models.push_back(floor);
+
+
+	}
+
+
+
+
+	auto createPyramid(); {
+		ModelBuffers floor;
+
+		static const VertexPositionColor floorVertices[] =
+		{
+			{ XMFLOAT3(-5, 0.0f, 5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(5, 0.0f,  5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(-5,  0.0f, -5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(5,  0.0f, -5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) }
+
+
+		};
+
+		D3D11_SUBRESOURCE_DATA vertexBufferData1 = { 0 };
+		vertexBufferData1.pSysMem = floorVertices;
+		vertexBufferData1.SysMemPitch = 0;
+		vertexBufferData1.SysMemSlicePitch = 0;
+		CD3D11_BUFFER_DESC vertexBufferDesc1(sizeof(floorVertices), D3D11_BIND_VERTEX_BUFFER);
+		HRESULT hr = Resources.device->CreateBuffer(&vertexBufferDesc1, &vertexBufferData1, &floor.m_model_vertexBuffer);
+
+
+
+		static const unsigned short floorIndices[] =
+		{
+			0,3,2,0,1,3
+
+		};
+
+		floor.m_model_indexCount = ARRAYSIZE(floorIndices);
+
+		D3D11_SUBRESOURCE_DATA indexBufferData1 = { 0 };
+		indexBufferData1.pSysMem = floorIndices;
+		indexBufferData1.SysMemPitch = 0;
+		indexBufferData1.SysMemSlicePitch = 0;
+		CD3D11_BUFFER_DESC indexBufferDesc1(sizeof(floorIndices), D3D11_BIND_INDEX_BUFFER);
+		hr = Resources.device->CreateBuffer(&indexBufferDesc1, &indexBufferData1, &floor.m_model_indexBuffer);
+
+
+		DirectX::XMMATRIX identity = DirectX::XMMatrixIdentity();
+		DirectX::XMMATRIX scaling;
+
+		scaling = DirectX::XMMatrixScaling(1, 1, 1);
+		DirectX::XMMATRIX transform = DirectX::XMMatrixMultiply(scaling, identity);
+		XMStoreFloat4x4(&floor.worldMatrix, transform);
+
+
+		Models.push_back(floor);
+
+
+	}
+
+
+
 
 
 	auto creatteBuffers();
@@ -119,7 +180,7 @@ void SceneRenderer::createBuffers()
 			CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(VertexPositionColor)*vertsNumber, D3D11_BIND_VERTEX_BUFFER);
 			Resources.device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &Models[i].m_model_vertexBuffer);
 
-
+	
 
 			unsigned short* modelIndices = new unsigned short[model.vertexIndexes.size() - 1];
 			for (unsigned int i = 0; i < model.vertexIndexes.size(); i++)
@@ -137,6 +198,8 @@ void SceneRenderer::createBuffers()
 			CD3D11_BUFFER_DESC indexBufferDesc(sizeof(unsigned short)*Models[i].m_model_indexCount, D3D11_BIND_INDEX_BUFFER);
 			Resources.device->CreateBuffer(&indexBufferDesc, &indexBufferData, &Models[i].m_model_indexBuffer);
 
+			delete[] modelVertices;
+			
 			DirectX::XMMATRIX identity = DirectX::XMMatrixIdentity();
 			DirectX::XMMATRIX scaling;
 
@@ -154,8 +217,9 @@ void SceneRenderer::createBuffers()
 			/*transform = DirectX::XMMatrixTranspose(transform);*/
 
 
-			XMStoreFloat4x4(&Models[i].worldMatrix, transform);
+			XMStoreFloat4x4(&Models[i].worldMatrix, identity);
 		
+
 		}
 	}
 
@@ -367,19 +431,35 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 		}
 }
 
-void SceneRenderer::drawModel(ModelBuffers model)
+void SceneRenderer::drawJoint(JointData joint)
+{
+	auto context = Resources.context;
+	
+	
+
+
+}
+
+void SceneRenderer::updateConstanBufferModel(DirectX::XMFLOAT4X4 model)
 {
 	auto context = Resources.context;
 	D3D11_MAPPED_SUBRESOURCE mapSubRes;
 	ZeroMemory(&mapSubRes, sizeof(mapSubRes));
-	UINT stride = sizeof(VertexPositionColor);
-	UINT offset = 0;
-	m_constantBufferData.model = model.worldMatrix;
-	
+
+	m_constantBufferData.model = model;
+
 	context->Map(m_constantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &mapSubRes);
 	memcpy(mapSubRes.pData, &m_constantBufferData, sizeof(ModelViewProjectionConstantBuffer));
 	context->Unmap(m_constantBuffer, NULL);
 
+}
+
+void SceneRenderer::drawModel(ModelBuffers model)
+{
+	auto context = Resources.context;
+	updateConstanBufferModel(model.worldMatrix);
+	UINT stride = sizeof(VertexPositionColor);
+	UINT offset = 0;
 	context->IASetIndexBuffer(model.m_model_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	context->IASetVertexBuffers(0, 1, &model.m_model_vertexBuffer, &stride, &offset);
 	context->DrawIndexed(model.m_model_indexCount, 0, 0);
@@ -388,21 +468,15 @@ void SceneRenderer::drawModel(ModelBuffers model)
 
 void SceneRenderer::debugRender(ModelBuffers model)
 {
-	/*Resources.context->PSSetShader(Resources.debugPixelShader, nullptr, 0);*/
-
-	auto context = Resources.context;
-	D3D11_MAPPED_SUBRESOURCE mapSubRes;
-	ZeroMemory(&mapSubRes, sizeof(mapSubRes));
+	Resources.context->PSSetShader(Resources.d_PixelShader, nullptr, 0);
 	UINT stride = sizeof(VertexPositionColor);
 	UINT offset = 0;
-	m_constantBufferData.model = model.worldMatrix;
-
-	context->Map(m_constantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &mapSubRes);
-	memcpy(mapSubRes.pData, &m_constantBufferData, sizeof(ModelViewProjectionConstantBuffer));
-	context->Unmap(m_constantBuffer, NULL);
-
+	auto context = Resources.context;
+	updateConstanBufferModel(model.worldMatrix);
+	context->RSSetState(Resources.m_rasterState);
 	context->IASetIndexBuffer(model.m_model_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	context->IASetVertexBuffers(0, 1, &model.m_model_vertexBuffer, &stride, &offset);
 	context->DrawIndexed(model.m_model_indexCount, 0, 0);
 	Resources.swapChain->Present(0, 0);
+	/*context->RSSetState(0);*/
 }

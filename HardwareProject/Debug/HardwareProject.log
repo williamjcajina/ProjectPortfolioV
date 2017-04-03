@@ -1,16 +1,6 @@
-﻿  compilation header save succeeded; see C:\Users\William\Desktop\ProjectPortfolioV\HardwareProject\PixelShader.csh
-  compilation object save succeeded; see C:\Users\William\Desktop\ProjectPortfolioV\Debug\PixelShader.cso
-  compilation header save succeeded; see C:\Users\William\Desktop\ProjectPortfolioV\HardwareProject\VertexShader.csh
-  compilation object save succeeded; see C:\Users\William\Desktop\ProjectPortfolioV\Debug\VertexShader.cso
-  XTime.cpp
-  SceneRenderer.cpp
-c:\users\william\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(319): warning C4244: '=': conversion from 'LONG' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(320): warning C4244: '=': conversion from 'LONG' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(261): warning C4101: 'mLClick': unreferenced local variable
-  Model.cpp
-c:\users\william\desktop\projectportfoliov\hardwareproject\model.cpp(158): warning C4018: '<': signed/unsigned mismatch
-  main.cpp
-  D3dclass.cpp
-  Generating Code...
+﻿  SceneRenderer.cpp
+c:\users\william\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(383): warning C4244: '=': conversion from 'LONG' to 'float', possible loss of data
+c:\users\william\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(384): warning C4244: '=': conversion from 'LONG' to 'float', possible loss of data
+c:\users\william\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(325): warning C4101: 'mLClick': unreferenced local variable
   HardwareProject.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\HardwareProject.exe
   HardwareProject.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\HardwareProject.pdb (Full PDB)

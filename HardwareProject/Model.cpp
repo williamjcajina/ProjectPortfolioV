@@ -5,7 +5,7 @@
 void Model::loadModel(const char* file_name)
 {
 	
-
+	isFBX = false;
 
 	string line;
 	ifstream file(file_name);
@@ -151,10 +151,10 @@ void Model::loadModel(const char* file_name)
 bool Model::loadModelFBX(const char * file_name)
 {
 	std::vector<Vertex> _vertices;
+	
+	loadFBX(file_name, _vertices, vertexIndexes , joints);
 
-	loadFBX(file_name, _vertices, vertexIndexes);
-
-
+	isFBX = true;
 	for (int i = 0; i < vertexIndexes.size(); i++)
 	{
 		VertexPositionUVNormal vertex;
@@ -173,6 +173,9 @@ bool Model::loadModelFBX(const char * file_name)
 		vertex.uv.z = 0;
 		vertexList.push_back(vertex);
 	}
+
+	
+
 
 
 	return true;

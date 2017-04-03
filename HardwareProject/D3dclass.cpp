@@ -64,7 +64,7 @@ void D3dclass::createInputLayout()
 	HRESULT hr;
 	hr =device->CreateVertexShader(VertexShader, sizeof(VertexShader), NULL, &vertexShader);
 	hr =device->CreatePixelShader(PixelShader, sizeof(PixelShader), NULL, &pixelShader);
-	
+	hr = device->CreatePixelShader(debugPixelShader, sizeof(debugPixelShader), NULL, &d_PixelShader);
 
 	D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
 	{
@@ -162,10 +162,19 @@ void D3dclass::setDepthStuff()
 
 void D3dclass::Shutdown()
 {
-
+	
+	
 	device->Release();
 	context->Release();
 	rtv->Release();
 	swapChain->Release();
-	
+	layout->Release();
+	pixelShader->Release();
+	vertexShader->Release();
+	d_PixelShader->Release();
+	m_depthStencilState->Release();
+	m_depthStencilView->Release();
+	m_depthStencilBuffer->Release();
+	m_rasterState->Release();
+
 }

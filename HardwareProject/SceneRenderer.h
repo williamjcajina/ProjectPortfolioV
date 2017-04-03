@@ -38,6 +38,9 @@ public:
 	void Render();
 	void UpdateCamera(MSG msg, XTime timer);
 
+	void drawJoint(JointData joint);
+	void drawBone();
+	void updateConstanBufferModel(DirectX::XMFLOAT4X4 model);
 	void drawModel( ModelBuffers model);
 	void debugRender(ModelBuffers model);
 
