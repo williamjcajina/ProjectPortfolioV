@@ -31,6 +31,12 @@ struct JointData
 	double matrix[16];
 };
 
+struct Pose 
+{
+	std::vector<JointData> joints;
+	std::string name;
+};
+
 struct Point
 {
 	float pos[3];

@@ -32,10 +32,6 @@ FBX_READER_API void fillJointVector(FbxNode * node, int depth, int index, int pa
 
 
 
-
-
-
-
 FBX_READER_API bool loadScene(const char * filename)
 {
 
@@ -235,8 +231,6 @@ FBX_READER_API void processPoints(FbxNode* node)
 		points[i] = currPoint;
 	}
 }
-
-
 FBX_READER_API void processData(FbxNode* node,std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes)
 {
 	
@@ -266,10 +260,6 @@ FBX_READER_API void processData(FbxNode* node,std::vector<Vertex> &vertices, std
 
 	
 }
-
-
-
-
 FBX_READER_API void exportJoints(std::vector<JointData> &jef)
 {
 	for (int i = 0; i < joints.size(); i++)
@@ -317,7 +307,6 @@ FBX_READER_API void exportJoints(std::vector<JointData> &jef)
 		
 	}
 }
-
 FBX_READER_API FbxNode* getSkeletonRoot()
 {
 	int y = mFBXScene->GetPoseCount();
@@ -341,7 +330,6 @@ FBX_READER_API FbxNode* getSkeletonRoot()
 	}
 
 }
-
 FBX_READER_API void fillJointVector(FbxNode * node, int depth, int index, int parentIndex)
 {
 	
@@ -362,8 +350,6 @@ FBX_READER_API void fillJointVector(FbxNode * node, int depth, int index, int pa
 		fillJointVector(node->GetChild(i), depth+1 , joints.size(), index);
 	}
 }
-
-
 bool loadFBX(const char * filename, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes, std::vector<JointData> &jef)
 {
 	if (!init())
@@ -380,7 +366,6 @@ bool loadFBX(const char * filename, std::vector<Vertex> &vertices, std::vector<u
 	return true;
 
 }
-
 bool init()
 {
 	mFBXManager = FbxManager::Create();
