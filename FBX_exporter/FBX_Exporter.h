@@ -9,7 +9,7 @@
 
 #include <vector>
 #include <unordered_map>
-
+#include <string>
 struct Vertex
 {
 
@@ -27,7 +27,7 @@ struct JointData
 	vect rotation;
 	vect translation;
 	vect scale;
-
+	std::string name;
 	double matrix[16];
 };
 
@@ -40,5 +40,6 @@ FBX_READER_API bool loadFBX(const char * filename, std::vector<Vertex> &vertices
 //FBX_READER_API void processData(FbxNode* node, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes);
 FBX_READER_API bool init();
 FBX_READER_API bool loadScene(const char * filename);
+
 
 

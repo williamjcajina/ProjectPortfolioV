@@ -26,12 +26,9 @@ FBX_READER_API void getUV(FbxMesh* inMesh, int inCtrlPointIndex, int inTextureUV
 FBX_READER_API void getNormal(FbxMesh* mesh, int index, int counter, float outNormal[3]);
 FBX_READER_API void getNodeVertexData(FbxNode* inNode, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes);
 FBX_READER_API void processData(FbxNode* node, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes);
-FBX_READER_API void processSkeleton(FbxNode* root);
-FBX_READER_API void traverseSkeletonHierarchy(FbxNode* node, int depth, int index, int parentIndex);
-FBX_READER_API void processJoints(FbxNode* node);
-FBX_READER_API FbxAMatrix getTransforms(FbxNode* inNode);
 FBX_READER_API void exportJoints(std::vector<JointData> &jef);
-
+FBX_READER_API FbxNode* getSkeletonRoot();
+FBX_READER_API void fillJointVector(FbxNode * node, int depth, int index, int parentIndex);
 
 
 
@@ -251,7 +248,7 @@ FBX_READER_API void processData(FbxNode* node,std::vector<Vertex> &vertices, std
 				{
 				case FbxNodeAttribute::eMesh:
 					processPoints(node);
-					processJoints(node);
+					/*processJoints(node);*/
 					getNodeVertexData(node, vertices, vertexIndexes);
 					
 					break;
@@ -270,109 +267,21 @@ FBX_READER_API void processData(FbxNode* node,std::vector<Vertex> &vertices, std
 	
 }
 
-FBX_READER_API void processSkeleton(FbxNode * root)
-{
-	for (int childIndex = 0; childIndex < root->GetChildCount(); ++childIndex)
-	{
-		FbxNode* currNode = root->GetChild(childIndex);
-		traverseSkeletonHierarchy(currNode, 0, 0, -1);
-	}
-}
-
-FBX_READER_API void traverseSkeletonHierarchy(FbxNode * node, int depth, int index, int parentIndex)
-{
-	if (node->GetNodeAttribute() && node->GetNodeAttribute()->GetAttributeType() && node->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eSkeleton)
-	{
-		Joint currJoint;
-		currJoint.mParentIndex = parentIndex;
-		currJoint.mName = node->GetName();
-		joints.push_back(currJoint);
-	}
-	for (int i = 0; i < node->GetChildCount(); i++)
-	{
-		traverseSkeletonHierarchy(node->GetChild(i), depth + 1, joints.size(), index);
-	}
-}
-
-FBX_READER_API void processJoints(FbxNode * node)
-{
-	FbxMesh* currMesh = node->GetMesh();
-	unsigned int numOfDeformers = currMesh->GetDeformerCount();
-	FbxAMatrix geometryTransform = getTransforms(node);
-
-	for (unsigned int deformerIndex = 0; deformerIndex < numOfDeformers; ++deformerIndex)
-	{
-
-		FbxSkin* currSkin = reinterpret_cast<FbxSkin*>(currMesh->GetDeformer(deformerIndex, FbxDeformer::eSkin));
-		if (!currSkin)
-		{
-			continue;
-		}
-		unsigned int numOfClusters = currSkin->GetClusterCount();
 
 
-		for (unsigned int clusterIndex = 0; clusterIndex < numOfClusters; ++clusterIndex)
-		{
-
-			FbxCluster* currCluster = currSkin->GetCluster(clusterIndex);
-			std::string currJointName = currCluster->GetLink()->GetName();
-			unsigned int currJointIndex;
-
-			for (unsigned int i = 0; i <joints.size(); ++i)
-			{
-				if (joints[i].mName == currJointName)
-				{
-					currJointIndex = i;
-					break;
-				}
-			}
-
-
-
-			FbxAMatrix transformMatrix;
-			FbxAMatrix transformLinkMatrix;
-			FbxAMatrix globalBindposeInverseMatrix;
-
-			currCluster->GetTransformMatrix(transformMatrix);
-			currCluster->GetTransformLinkMatrix(transformLinkMatrix);
-			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
-
-			
-			joints[currJointIndex].mGlobalBindposeInverse = globalBindposeInverseMatrix;
-			joints[currJointIndex].mNode = currCluster->GetLink();
-		}
-
-
-
-
-	}
-	
-
-}
-
-FBX_READER_API FbxAMatrix getTransforms(FbxNode * inNode)
-{
-	if (!inNode)
-	{
-		throw std::exception("Null for mesh geometry");
-	}
-
-	const FbxVector4 lT = inNode->GetGeometricTranslation(FbxNode::eSourcePivot);
-	const FbxVector4 lR = inNode->GetGeometricRotation(FbxNode::eSourcePivot);
-	const FbxVector4 lS = inNode->GetGeometricScaling(FbxNode::eSourcePivot);
-
-	return FbxAMatrix(lT, lR, lS);
-}
 
 FBX_READER_API void exportJoints(std::vector<JointData> &jef)
 {
 	for (int i = 0; i < joints.size(); i++)
 	{
+		
+		
+
 		JointData j;
 		j.parentIndex = joints[i].mParentIndex;
 		
 
-		
+		j.name =  joints[i].mName;
 		FbxVector4 rot = joints[i].mGlobalBindposeInverse.GetR();
 		FbxVector4 pos = joints[i].mGlobalBindposeInverse.GetT();
 		
@@ -409,6 +318,51 @@ FBX_READER_API void exportJoints(std::vector<JointData> &jef)
 	}
 }
 
+FBX_READER_API FbxNode* getSkeletonRoot()
+{
+	int y = mFBXScene->GetPoseCount();
+	FbxPose *pose = mFBXScene->GetPose(0);
+	if (pose->IsBindPose())
+	{
+		
+		for (int i = 0; i < pose->GetCount(); i++)
+		{
+			FbxNode * node = pose->GetNode(i);
+			FbxSkeleton* skeleton = node->GetSkeleton();
+			if (skeleton == NULL)
+				continue;
+
+			if (skeleton->IsSkeletonRoot())
+			{
+				return node;
+			}
+
+		}
+	}
+
+}
+
+FBX_READER_API void fillJointVector(FbxNode * node, int depth, int index, int parentIndex)
+{
+	
+
+		Joint currJoint;
+
+		currJoint.mParentIndex = parentIndex;
+		currJoint.mName = node->GetName();
+		FbxAMatrix matrix = node->EvaluateGlobalTransform();
+		currJoint.mGlobalBindposeInverse = matrix;
+		currJoint.mNode = node;
+		joints.push_back(currJoint);
+	
+
+
+	for (int i = 0; i < node->GetChildCount(); i++)
+	{
+		fillJointVector(node->GetChild(i), depth+1 , joints.size(), index);
+	}
+}
+
 
 bool loadFBX(const char * filename, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes, std::vector<JointData> &jef)
 {
@@ -417,7 +371,8 @@ bool loadFBX(const char * filename, std::vector<Vertex> &vertices, std::vector<u
 
 	if (!loadScene(filename))
 		return false;
-	processSkeleton(mFBXScene->GetRootNode());
+	
+	fillJointVector(getSkeletonRoot(), 0, 0, -1);
 	processData(mFBXScene->GetRootNode(), vertices, vertexIndexes);
 	exportJoints(jef);
 

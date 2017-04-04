@@ -293,7 +293,7 @@ void SceneRenderer::setCamera()
 	XMStoreFloat4x4(&m_camera, XMMatrixInverse(nullptr, XMMatrixLookAtLH(eye, at, up)));
 	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtLH(eye, at, up)));
 	
-	XMMATRIX translation = XMMatrixTranslation(0.0f, 50.0f, -100.0f);
+	XMMATRIX translation = XMMatrixTranslation(0.0f, 90.0f, -180.0f);
 	XMMATRIX temp_camera = XMLoadFloat4x4(&m_camera);
 	XMMATRIX result = XMMatrixMultiply(translation, temp_camera);
 	XMStoreFloat4x4(&m_camera, result);
@@ -339,7 +339,9 @@ void SceneRenderer::Render()
 	
 	
 	debugRender(Models[2]);
+	drawModel(Models[0]);
 
+	
 	Resources.swapChain->Present(0, 0);
 }
 
@@ -472,10 +474,10 @@ void SceneRenderer::drawJoint(JointData joint)
 	UINT offset = 0;
 	auto context = Resources.context;
 	
-	DirectX::XMMATRIX scaling = DirectX::XMMatrixScaling(3*joint.scale.x, 3*joint.scale.y, 3*joint.scale.z);
+	DirectX::XMMATRIX scaling = DirectX::XMMatrixScaling(5*joint.scale.x, 5*joint.scale.y, 5*joint.scale.z);
 
 	
-	XMMATRIX translation = DirectX::XMMatrixTranslation(joint.translation.x, -joint.translation.y, -joint.translation.z);
+	XMMATRIX translation = DirectX::XMMatrixTranslation(joint.translation.x, joint.translation.y, joint.translation.z);
 	
 	XMMATRIX result = XMMatrixMultiply(translation, DirectX::XMMatrixIdentity());
 	
@@ -494,6 +496,8 @@ void SceneRenderer::drawJoint(JointData joint)
 
 
 	drawModel(Models[1]);
+
+
 
 
 }
@@ -554,7 +558,6 @@ void SceneRenderer::drawModel(ModelBuffers model)
 {
 	
 	auto context = Resources.context;
-	/*context->RSSetState(0);*/
 	context->RSSetState(0);
 	updateConstanBufferModel(model.worldMatrix);
 	context->PSSetShader(Resources.pixelShader, nullptr, 0);
@@ -570,6 +573,7 @@ void SceneRenderer::drawModel(ModelBuffers model)
 
 void SceneRenderer::createBonesBuffer(ModelBuffers &model)
 {
+
 	for (int i = 0; i < model.joints.size(); i++)
 	{
 		
@@ -579,14 +583,16 @@ void SceneRenderer::createBonesBuffer(ModelBuffers &model)
 		
 	Line bone;
 		
+
 		JointData parent = model.joints[child.parentIndex];
 
-		
+		bone.childIndex = i;
+		bone.parentIndex = child.parentIndex;
 		
 		const int  vertsNumber = 2;
 		VertexPositionColor modelVertices[vertsNumber] = 
-		{   { XMFLOAT3(parent.translation.x, -parent.translation.y,  -parent.translation.z), XMFLOAT3(1.0f, 0.0f, 1.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3(child.translation.x, -child.translation.y, -child.translation.z), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{   { XMFLOAT3(parent.translation.x, parent.translation.y,  parent.translation.z), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(child.translation.x, child.translation.y, child.translation.z), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
 			
 		
 		};
@@ -643,9 +649,9 @@ void SceneRenderer::createAxisBuffer()
 	VertexPositionColor modelVertices[vertsNumber] =
 	{ 
 		{ XMFLOAT3( 0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3( 100.0f,0.0f,0.0f ), XMFLOAT3(1.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(0.0f,100.0f,0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(0.0f,0.0f,100.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3( 1.0f,0.0f,0.0f ), XMFLOAT3(1.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(0.0f,1.0f,0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(0.0f,0.0f,1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
 	};
 
 
@@ -694,14 +700,15 @@ void SceneRenderer::debugRender(ModelBuffers model)
 	if (!model.isFBX)
 		return;
 	
+	
 	for (int i = 0; i < model.joints.size(); i++)
 	{
 		drawJoint(model.joints[i]);
+	
+		DirectX::XMMATRIX scaling = DirectX::XMMatrixScaling(5, 5, 5);
 
-		DirectX::XMMATRIX scaling = DirectX::XMMatrixScaling(0.05, 0.05, 0.05);
-
-
-		XMMATRIX translation = DirectX::XMMatrixTranslation(-model.joints[i].translation.x, -model.joints[i].translation.y, -model.joints[i].translation.z);
+		
+		XMMATRIX translation = DirectX::XMMatrixTranslation(model.joints[i].translation.x, model.joints[i].translation.y, model.joints[i].translation.z);
 
 		XMMATRIX result = XMMatrixMultiply(translation, DirectX::XMMatrixIdentity());
 
@@ -718,9 +725,12 @@ void SceneRenderer::debugRender(ModelBuffers model)
 		
 	
 	}
+
+	/*drawBone(model.bones[t]);*/
 	for (int i = 0; i < model.bones.size(); i++)
 	{
 		drawBone(model.bones[i]);
+		
 	}
 	
 	context->RSSetState(0);
@@ -749,8 +759,6 @@ void SceneRenderer::drawAxis(XMFLOAT4X4 matrix)
 	context->DrawIndexed(6, 0, 0);
 
 }
-
-
 
 void SceneRenderer::Shutdown()
 {

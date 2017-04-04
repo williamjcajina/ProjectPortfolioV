@@ -16,6 +16,8 @@ class SceneRenderer
 
 	struct Line
 	{
+		int parentIndex;
+		int childIndex;
 		ID3D11Buffer*		m_model_vertexBuffer;
 		ID3D11Buffer*		m_model_indexBuffer;
 

@@ -13,7 +13,7 @@
 #include <DirectXCollision.h>
 #include "ShaderStructures.h"
 #define SCREEN_WIDTH 1024
-#define SCREEN_HEIGHT 900
+#define SCREEN_HEIGHT 768
 using namespace DirectX;
 
 	class D3dclass
