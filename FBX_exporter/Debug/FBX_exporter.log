@@ -1,20 +1,20 @@
 ﻿  dllmain.cpp
   stdafx.cpp
   FBX_exporter.cpp
-c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(369): warning C4018: '<': signed/unsigned mismatch
-c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(381): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(382): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(383): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(384): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(386): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(387): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(388): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(389): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(391): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(392): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(393): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(394): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(369): warning C4018: '<': signed/unsigned mismatch
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(381): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(382): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(383): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(384): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(386): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(387): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(388): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(389): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(391): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(392): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(393): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(394): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
   Generating Code...
-     Creating library C:\Users\William\Desktop\ProjectPortfolioV\Debug\FBX_exporter.lib and object C:\Users\William\Desktop\ProjectPortfolioV\Debug\FBX_exporter.exp
-  FBX_exporter.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\FBX_exporter.dll
-  FBX_exporter.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\FBX_exporter.pdb (Full PDB)
+     Creating library C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.lib and object C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.exp
+  FBX_exporter.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.dll
+  FBX_exporter.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.pdb (Full PDB)

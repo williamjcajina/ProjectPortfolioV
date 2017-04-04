@@ -6,7 +6,7 @@
 #include "VertexShader.csh"
 #include "PixelShader.csh"
 #include "debugPixelShader.csh"
-#include "vld.h"
+
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
