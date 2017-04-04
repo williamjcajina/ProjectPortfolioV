@@ -9,6 +9,7 @@ D3dclass::D3dclass()
 
 D3dclass::~D3dclass()
 {
+
 }
 
 void D3dclass::setSwapChain(HWND window)
@@ -137,7 +138,7 @@ void D3dclass::setDepthStuff()
 
 	
 	device->CreateDepthStencilView(m_depthStencilBuffer, &depthStencilViewDesc, &m_depthStencilView);
-	/*context->OMSetRenderTargets(1, &rtv, m_depthStencilView)*/;
+	context->OMSetRenderTargets(1, &rtv, m_depthStencilView);
 	
 	
 	
@@ -164,8 +165,6 @@ void D3dclass::Shutdown()
 {
 	
 	
-	device->Release();
-	context->Release();
 	rtv->Release();
 	swapChain->Release();
 	layout->Release();
@@ -176,5 +175,8 @@ void D3dclass::Shutdown()
 	m_depthStencilView->Release();
 	m_depthStencilBuffer->Release();
 	m_rasterState->Release();
+
+	context->Release();
+	device->Release();
 
 }

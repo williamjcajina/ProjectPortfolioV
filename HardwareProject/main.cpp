@@ -86,7 +86,7 @@ DEMO_APP::DEMO_APP(HINSTANCE hinst, WNDPROC proc)
 
 bool DEMO_APP::Run(MSG msg)
 {
-	timer.Signal();
+		timer.Signal();
 		scene.Render();
 		scene.UpdateCamera(msg,timer);
 		
@@ -97,7 +97,7 @@ bool DEMO_APP::Run(MSG msg)
 
 bool DEMO_APP::ShutDown()
 {
-	scene.Resources.Shutdown();
+	scene.Shutdown();
 	
 	UnregisterClass( L"DirectXApplication", application ); 
 	return true;
