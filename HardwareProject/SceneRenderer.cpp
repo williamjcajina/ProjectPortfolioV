@@ -7,6 +7,7 @@ SceneRenderer::SceneRenderer()
 	for (int i = 0; i < 256; i++)
 	{
 		buttons[i] = false;
+		prevButtons[i] = false;
 
 	}
 	for (int i = 0; i < 2; i++)
@@ -16,6 +17,10 @@ SceneRenderer::SceneRenderer()
 
 	}
 	m_loadingComplete = false;
+	debug.joints = false;
+	debug.bones = false;
+
+	
 }
 
 
@@ -166,22 +171,22 @@ void SceneRenderer::createBuffers()
 		{
 
 
-			Model model;
+			Model* model = new Model;
 			if (Models[i].name == nullptr)
 				continue;
-			if(!model.loadModelFBX(Models[i].name))
-			model.loadModel(Models[i].name);
+			if(!model->loadModelFBX(Models[i].name))
+			model->loadModel(Models[i].name);
 		
 
-			const int  vertsNumber = model.vertexList.size();
+			const int  vertsNumber = model->vertexList.size();
 			VertexPositionColor* modelVertices = new VertexPositionColor[vertsNumber];
 			
 
 			for (int i = 0; i < vertsNumber; i++)
 			{
-				modelVertices[i].pos = model.vertexList[i].pos;
-				modelVertices[i].color = model.vertexList[i].uv;
-				modelVertices[i].normal = model.vertexList[i].normal;
+				modelVertices[i].pos = model->vertexList[i].pos;
+				modelVertices[i].color = model->vertexList[i].uv;
+				modelVertices[i].normal = model->vertexList[i].normal;
 				/*modelVertices[i].tangent = model.vertexList[i].tangent;
 				modelVertices[i].binormal = model.vertexList[i].binormal;*/
 
@@ -199,15 +204,15 @@ void SceneRenderer::createBuffers()
 
 	
 
-			unsigned short* modelIndices = new unsigned short[model.vertexIndexes.size() - 1];
-			for (unsigned int i = 0; i < model.vertexIndexes.size(); i++)
+			unsigned short* modelIndices = new unsigned short[model->vertexIndexes.size() - 1];
+			for (unsigned int i = 0; i < model->vertexIndexes.size(); i++)
 			{
 				modelIndices[i] = i;
 
 			}
 
 		
-			Models[i].m_model_indexCount = model.vertexIndexes.size() - 1;
+			Models[i].m_model_indexCount = model->vertexIndexes.size() - 1;
 			D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
 			indexBufferData.pSysMem = modelIndices;
 			indexBufferData.SysMemPitch = 0;
@@ -226,18 +231,19 @@ void SceneRenderer::createBuffers()
 
 			XMStoreFloat4x4(&Models[i].worldMatrix, DirectX::XMMatrixIdentity());
 		
-			if (model.isFBX)
+			if (model->isFBX)
 			{
-				Models[i].joints = model.joints;
-				createBonesBuffer(Models[i]);
+				Models[i].model = model;
+			
 				Models[i].isFBX = true;
 			}
 		}
 	}
-
+	createLineBuffer();
 	auto createAxises();
 	{
 		createAxisBuffer();
+		timer.Signal();
 	};
 	m_loadingComplete = true;
 }
@@ -256,10 +262,7 @@ void SceneRenderer::createConstantBuffers()
 
 	HRESULT result = Resources.device->CreateBuffer(&matrixBufferDesc, NULL, &m_constantBuffer);
 
-	//CD3D11_BUFFER_DESC constantBufferDesc(sizeof(ModelViewProjectionConstantBuffer), D3D11_BIND_CONSTANT_BUFFER);
-	//HRESULT hr = Resources.device->CreateBuffer(&constantBufferDesc, nullptr, m_constantBuffer.);
-
-	//int y = 0;
+	
 
 
 }
@@ -301,9 +304,10 @@ void SceneRenderer::setCamera()
 
 void SceneRenderer::Render()
 {
+
 	
 	
-	
+	timer.Signal();
 	auto context = Resources.context;
 
 	
@@ -319,7 +323,7 @@ void SceneRenderer::Render()
 	context->ClearRenderTargetView(Resources.rtv, color);
 	context->ClearDepthStencilView(Resources.m_depthStencilView, D3D11_CLEAR_DEPTH, 1.0f, 0);
 
-	//context->OMSetRenderTargets(1, &Resources.rtv, Resources.dsv);
+
 
 	
 	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixInverse(nullptr, XMLoadFloat4x4(&m_camera))));
@@ -333,9 +337,7 @@ void SceneRenderer::Render()
 	
 	context->VSSetConstantBuffers(0, 1, &m_constantBuffer);
 
-	XMMATRIX i = DirectX::XMMatrixIdentity();
-	XMFLOAT4X4 l;
-	XMStoreFloat4x4(&l, i);
+
 	
 	
 	debugRender(Models[2]);
@@ -348,8 +350,10 @@ void SceneRenderer::Render()
 void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 {
 	const float delta_time = (float)timer.SmoothDelta();
-	bool mLClick;
+	/*bool mLClick;*/
 
+	if (msg.wParam < 256 && msg.wParam>0 && msg.wParam == 'J')
+	prevButtons[msg.wParam] = buttons[msg.wParam];
 	
 	if (msg.message == WM_KEYDOWN)
 		buttons[msg.wParam] = true;
@@ -411,10 +415,13 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 	}
 
 	
+	debug.joints = !buttons['J'];
+	
+
 
 	
-		currMousePos[0] = msg.pt.x;
-		currMousePos[1] = msg.pt.y;
+		currMousePos[0] =(float) msg.pt.x;
+		currMousePos[1] =(float) msg.pt.y;
 		if (tracking )
 		{
 			float dx = currMousePos[0] - preMousePos[0];
@@ -482,7 +489,7 @@ void SceneRenderer::drawJoint(JointData joint)
 	XMMATRIX result = XMMatrixMultiply(translation, DirectX::XMMatrixIdentity());
 	
 	result = DirectX::XMMatrixTranspose(result);
-	result = XMMatrixMultiply(result, scaling);
+	//result = XMMatrixMultiply(result, scaling);
 	
 	
 	
@@ -502,39 +509,7 @@ void SceneRenderer::drawJoint(JointData joint)
 
 }
 
-void SceneRenderer::drawBone(Line bone)
-{
-	if (!debug.bones)
-		return;
 
-	UINT stride = sizeof(VertexPositionColor);
-	UINT offset = 0;
-	auto context = Resources.context;
-
-
-
-	XMMATRIX m = DirectX::XMMatrixIdentity();
-	XMFLOAT4X4 l;
-	XMStoreFloat4x4(&l, m);
-
-
-
-
-
-
-	
-	context->RSSetState(0);
-	updateConstanBufferModel(l);
-	context->PSSetShader(Resources.pixelShader, nullptr, 0);
-	
-	context->IASetIndexBuffer(bone.m_model_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-	context->IASetVertexBuffers(0, 1, &bone.m_model_vertexBuffer, &stride, &offset);
-	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-	context->DrawIndexed(2, 0, 0);
-	
-
-	
-}
 
 void SceneRenderer::updateConstanBufferModel(DirectX::XMFLOAT4X4 model)
 {
@@ -569,71 +544,11 @@ void SceneRenderer::drawModel(ModelBuffers model)
 	context->DrawIndexed(model.m_model_indexCount, 0, 0);
 	
 
-}
-
-void SceneRenderer::createBonesBuffer(ModelBuffers &model)
-{
-
-	for (int i = 0; i < model.joints.size(); i++)
-	{
-		
-		JointData child = model.joints[i];
-		if (child.parentIndex == -1)
-			continue;
-		
-	Line bone;
-		
-
-		JointData parent = model.joints[child.parentIndex];
-
-		bone.childIndex = i;
-		bone.parentIndex = child.parentIndex;
-		
-		const int  vertsNumber = 2;
-		VertexPositionColor modelVertices[vertsNumber] = 
-		{   { XMFLOAT3(parent.translation.x, parent.translation.y,  parent.translation.z), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3(child.translation.x, child.translation.y, child.translation.z), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			
-		
-		};
-
-
-
-
-		D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
-		vertexBufferData.pSysMem = modelVertices;
-		vertexBufferData.SysMemPitch = 0;
-		vertexBufferData.SysMemSlicePitch = 0;
-		CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(VertexPositionColor)*vertsNumber, D3D11_BIND_VERTEX_BUFFER);
-		Resources.device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &bone.m_model_vertexBuffer);
-
-
-
-		unsigned short modelIndices[3] = { 0,1};
-		
-
-
-		
-		D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
-		indexBufferData.pSysMem = modelIndices;
-		indexBufferData.SysMemPitch = 0;
-		indexBufferData.SysMemSlicePitch = 0;
-		CD3D11_BUFFER_DESC indexBufferDesc(sizeof(unsigned short)*2, D3D11_BIND_INDEX_BUFFER);
-		Resources.device->CreateBuffer(&indexBufferDesc, &indexBufferData, &bone.m_model_indexBuffer);
-
-
-		model.bones.push_back(bone);
-
-
-
-
-
-
-	}
-
 
 
 }
+
+
 
 void SceneRenderer::createAxisBuffer()
 {
@@ -685,6 +600,7 @@ void SceneRenderer::createAxisBuffer()
 
 void SceneRenderer::debugRender(ModelBuffers model)
 {
+
 	Resources.context->PSSetShader(Resources.d_PixelShader, nullptr, 0);
 	UINT stride = sizeof(VertexPositionColor);
 	UINT offset = 0;
@@ -694,44 +610,38 @@ void SceneRenderer::debugRender(ModelBuffers model)
 	context->IASetIndexBuffer(model.m_model_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	context->IASetVertexBuffers(0, 1, &model.m_model_vertexBuffer, &stride, &offset);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	context->DrawIndexed(model.m_model_indexCount, 0, 0);
+	//context->DrawIndexed(model.m_model_indexCount, 0, 0);
 	
 	
 	if (!model.isFBX)
 		return;
 	
-	
-	for (int i = 0; i < model.joints.size(); i++)
+	std::vector<JointData> current = currentPose(model);
+	for (unsigned int i = 0; i <current.size() ; i++)
 	{
-		drawJoint(model.joints[i]);
+		drawJoint(current[i]);
 	
 		DirectX::XMMATRIX scaling = DirectX::XMMatrixScaling(5, 5, 5);
 
 		
-		XMMATRIX translation = DirectX::XMMatrixTranslation(model.joints[i].translation.x, model.joints[i].translation.y, model.joints[i].translation.z);
-
+		XMMATRIX translation = DirectX::XMMatrixTranslation(current[i].translation.x, current[i].translation.y, current[i].translation.z);
 		XMMATRIX result = XMMatrixMultiply(translation, DirectX::XMMatrixIdentity());
-
 		result = DirectX::XMMatrixTranspose(result);
 		result = XMMatrixMultiply(result, scaling);
-
-
 		XMFLOAT4X4 axis;
 		XMStoreFloat4x4(&axis, result);
-
 		drawAxis(axis);
-
-
 		
+		XMFLOAT3 x(current[i].translation.x, current[i].translation.y, current[i].translation.z);
+		if (current[i].parentIndex == -1)
+			continue;
+		XMFLOAT3 y(current[current[i].parentIndex].translation.x, current[current[i].parentIndex].translation.y, current[current[i].parentIndex].translation.z);
+		draWLine(x, y);
 	
 	}
 
-	/*drawBone(model.bones[t]);*/
-	for (int i = 0; i < model.bones.size(); i++)
-	{
-		drawBone(model.bones[i]);
-		
-	}
+	
+	
 	
 	context->RSSetState(0);
 	
@@ -760,16 +670,101 @@ void SceneRenderer::drawAxis(XMFLOAT4X4 matrix)
 
 }
 
+void SceneRenderer::draWLine(XMFLOAT3 x, XMFLOAT3 y)
+{
+
+	UINT stride = sizeof(VertexPositionColor);
+	UINT offset = 0;
+	auto context = Resources.context;
+
+
+
+
+
+
+
+
+	D3D11_MAPPED_SUBRESOURCE mapSubRes;
+	ZeroMemory(&mapSubRes, sizeof(mapSubRes));
+
+	const int  vertsNumber = 2;
+	VertexPositionColor modelVertices[vertsNumber] =
+	{ { x, XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+	{ y, XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+
+
+	};
+
+
+	HRESULT l = context->Map(line.m_model_vertexBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &mapSubRes);
+
+
+	memcpy(mapSubRes.pData, &modelVertices, sizeof(VertexPositionColor)*vertsNumber);
+
+	context->Unmap(line.m_model_vertexBuffer, NULL);
+
+
+
+	context->RSSetState(0);
+	;
+	
+	context->PSSetShader(Resources.pixelShader, nullptr, 0);
+
+	context->IASetIndexBuffer(line.m_model_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
+	context->IASetVertexBuffers(0, 1, &line.m_model_vertexBuffer, &stride, &offset);
+	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+	context->DrawIndexed(2, 0, 0);
+}
+
+void SceneRenderer::createLineBuffer()
+{
+
+	const int  vertsNumber = 2;
+	VertexPositionColor modelVertices[vertsNumber] =
+	{ { XMFLOAT3(0, 0, 0), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+	{ XMFLOAT3(0, 0, 0), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+
+
+	};
+
+
+
+
+	D3D11_SUBRESOURCE_DATA vertexBufferData = { 0 };
+	vertexBufferData.pSysMem = modelVertices;
+	
+	vertexBufferData.SysMemPitch = 0;
+	vertexBufferData.SysMemSlicePitch = 0;
+	CD3D11_BUFFER_DESC vertexBufferDesc(sizeof(VertexPositionColor)*vertsNumber, D3D11_BIND_VERTEX_BUFFER);
+	vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	Resources.device->CreateBuffer(&vertexBufferDesc, &vertexBufferData, &line.m_model_vertexBuffer);
+
+
+
+	unsigned short modelIndices[2] = { 0,1 };
+
+
+
+
+	D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
+	indexBufferData.pSysMem = modelIndices;
+	indexBufferData.SysMemPitch = 0;
+	indexBufferData.SysMemSlicePitch = 0;
+	CD3D11_BUFFER_DESC indexBufferDesc(sizeof(unsigned short) * 2, D3D11_BIND_INDEX_BUFFER);
+	Resources.device->CreateBuffer(&indexBufferDesc, &indexBufferData, &line.m_model_indexBuffer);
+}
+
 void SceneRenderer::Shutdown()
 {
-	for (int i = 0; i < Models.size(); i++)
+	for (unsigned int i = 0; i < Models.size(); i++)
 	{
 		Models[i].m_model_vertexBuffer->Release();
 		Models[i].m_model_indexBuffer->Release();
 
 		if (Models[i].isFBX)
 		{
-			for (int j = 0; j < Models[i].bones.size(); j++)
+			for (unsigned int j = 0; j < Models[i].bones.size(); j++)
 			{
 				Models[i].bones[j].m_model_indexBuffer->Release();
 				Models[i].bones[j].m_model_vertexBuffer->Release();
@@ -783,3 +778,16 @@ void SceneRenderer::Shutdown()
 	m_constantBuffer->Release();
 	Resources.Shutdown();
 }
+
+std::vector<JointData> SceneRenderer::currentPose(ModelBuffers model)
+{
+	 
+	int frame = timer.TotalTime()*60;
+	if (frame > model.model->animation.frames.size() - 2)
+	{
+		frame = 1;
+		timer.Restart();
+	}
+	return model.model->animation.frames[frame+1].joints;
+}
+

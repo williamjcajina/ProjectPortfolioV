@@ -20,15 +20,29 @@ struct Joint
 
 };
 
+struct KeyFrame
+{
+	std::vector<Joint> joints;
+	std::string name;
+	double time;
+};
+
+struct AnimClip
+{
+	std::vector<KeyFrame> frames;
+	double duration;
+};
+AnimClip animationClip;
 std::vector<Joint> joints;
 
 FBX_READER_API void getUV(FbxMesh* inMesh, int inCtrlPointIndex, int inTextureUVIndex, int inUVLayer, float outUV[2]);
 FBX_READER_API void getNormal(FbxMesh* mesh, int index, int counter, float outNormal[3]);
 FBX_READER_API void getNodeVertexData(FbxNode* inNode, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes);
 FBX_READER_API void processData(FbxNode* node, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes);
-FBX_READER_API void exportJoints(std::vector<JointData> &jef);
+FBX_READER_API void exportData(AnimationData &anim);
 FBX_READER_API FbxNode* getSkeletonRoot();
 FBX_READER_API void fillJointVector(FbxNode * node, int depth, int index, int parentIndex);
+FBX_READER_API void GetAnimationData();
 
 
 
@@ -260,57 +274,67 @@ FBX_READER_API void processData(FbxNode* node,std::vector<Vertex> &vertices, std
 
 	
 }
-FBX_READER_API void exportJoints(std::vector<JointData> &jef)
+FBX_READER_API void exportData(AnimationData &anim)
 {
-	for (int i = 0; i < joints.size(); i++)
-	{
-		
-		
-
-		JointData j;
-		j.parentIndex = joints[i].mParentIndex;
-		
-
-		j.name =  joints[i].mName;
-		FbxVector4 rot = joints[i].mGlobalBindposeInverse.GetR();
-		FbxVector4 pos = joints[i].mGlobalBindposeInverse.GetT();
-		
-		FbxVector4 sca = joints[i].mGlobalBindposeInverse.GetS();
 	
-		j.rotation.x = rot.mData[0];
-		j.rotation.y = rot.mData[1];
-		j.rotation.z = rot.mData[2];
-		j.rotation.w = rot.mData[3];
-
-		j.translation.x = pos.mData[0];
-		j.translation.y = pos.mData[1];
-		j.translation.z = pos.mData[2];
-		j.translation.w = pos.mData[3];
-
-		j.scale.x = sca.mData[0];
-		j.scale.y = sca.mData[1];
-		j.scale.z = sca.mData[2];
-		j.scale.w = sca.mData[3];
-
-	 
-		int k = 0;
-		for (int m = 0; m < 4; m++)
-		{
-			for (int n = 0; n < 4; n++)
-			{
-				j.matrix[k] = joints[i].mGlobalBindposeInverse.mData[m][n];
-				k++;
-			}
-		}
-
-		jef.push_back(j);
+	anim.duration = animationClip.duration;
+	for (unsigned int i = 0; i < animationClip.frames.size(); i++)
+	{
+		KeyFrameData out;
 		
+		for (unsigned int j = 0; j < animationClip.frames[i].joints.size(); j++)
+		{
+			JointData jd;
+			jd.parentIndex = animationClip.frames[i].joints[j].mParentIndex;
+
+
+			jd.name = animationClip.frames[i].joints[j].mName;
+			FbxVector4 rot = animationClip.frames[i].joints[j].mGlobalBindposeInverse.GetR();
+			FbxVector4 pos = animationClip.frames[i].joints[j].mGlobalBindposeInverse.GetT();
+
+			FbxVector4 sca = animationClip.frames[i].joints[j].mGlobalBindposeInverse.GetS();
+
+			jd.rotation.x = (float)rot.mData[0];
+			jd.rotation.y = (float)rot.mData[1];
+			jd.rotation.z = (float)rot.mData[2];
+			jd.rotation.w = (float)rot.mData[3];
+
+			jd.translation.x = (float)pos.mData[0];
+			jd.translation.y = (float)pos.mData[1];
+			jd.translation.z = (float)pos.mData[2];
+			jd.translation.w = (float)pos.mData[3];
+
+			jd.scale.x = (float)sca.mData[0];
+			jd.scale.y = (float)sca.mData[1];
+			jd.scale.z = (float)sca.mData[2];
+			jd.scale.w = (float)sca.mData[3];
+
+			int k = 0;
+			for (int m = 0; m < 4; m++)
+			{
+				for (int n = 0; n < 4; n++)
+				{
+					jd.matrix[k] = animationClip.frames[i].joints[j].mGlobalBindposeInverse.mData[m][n];
+					k++;
+				}
+			}
+
+			out.time = animationClip.frames[i].time;
+			out.name = animationClip.frames[i].name;
+			out.joints.push_back(jd);
+
+		}
+		anim.frames.push_back(out);
+		
+
 	}
 }
 FBX_READER_API FbxNode* getSkeletonRoot()
 {
 	int y = mFBXScene->GetPoseCount();
 	FbxPose *pose = mFBXScene->GetPose(0);
+	
+	
 	if (pose->IsBindPose())
 	{
 		
@@ -328,6 +352,8 @@ FBX_READER_API FbxNode* getSkeletonRoot()
 
 		}
 	}
+	
+	return nullptr;
 
 }
 FBX_READER_API void fillJointVector(FbxNode * node, int depth, int index, int parentIndex)
@@ -350,7 +376,40 @@ FBX_READER_API void fillJointVector(FbxNode * node, int depth, int index, int pa
 		fillJointVector(node->GetChild(i), depth+1 , joints.size(), index);
 	}
 }
-bool loadFBX(const char * filename, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes, std::vector<JointData> &jef)
+FBX_READER_API void GetAnimationData()
+{
+	FbxAnimStack* animStack = mFBXScene->GetCurrentAnimationStack();
+	FbxTimeSpan localTimeSpan = animStack->GetLocalTimeSpan();
+	FbxTime time = localTimeSpan.GetDuration();
+	unsigned int frameCount = time.GetFrameCount(FbxTime::eFrames24);
+
+	for (unsigned int i = 0; i < frameCount; i++)
+	{
+		KeyFrame frame;
+		FbxTime currTime;
+		currTime.SetFrame(i, FbxTime::eFrames24);
+		frame.time = currTime.Get();
+		for (unsigned int j = 0; j < joints.size(); j++)
+		{
+			Joint currJoint;
+
+			currJoint.mParentIndex = joints[j].mParentIndex;
+			currJoint.mName = joints[j].mName;
+			FbxAMatrix matrix = joints[j].mNode->EvaluateGlobalTransform(currTime);
+			currJoint.mGlobalBindposeInverse = matrix;
+			currJoint.mNode = joints[j].mNode;
+			frame.joints.push_back(currJoint);
+
+		}
+		animationClip.frames.push_back(frame);
+		
+	}
+	animationClip.duration = time.Get();
+
+
+
+}
+bool loadFBX(const char * filename, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes, AnimationData &animation)
 {
 	if (!init())
 		return false;
@@ -360,7 +419,8 @@ bool loadFBX(const char * filename, std::vector<Vertex> &vertices, std::vector<u
 	
 	fillJointVector(getSkeletonRoot(), 0, 0, -1);
 	processData(mFBXScene->GetRootNode(), vertices, vertexIndexes);
-	exportJoints(jef);
+	GetAnimationData();
+	exportData(animation);
 
 
 	return true;

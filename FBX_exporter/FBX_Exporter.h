@@ -31,10 +31,19 @@ struct JointData
 	double matrix[16];
 };
 
-struct Pose 
+
+
+struct KeyFrameData
 {
 	std::vector<JointData> joints;
 	std::string name;
+	double time;
+};
+
+struct AnimationData
+{
+	std::vector<KeyFrameData> frames;
+	double duration;
 };
 
 struct Point
@@ -42,7 +51,7 @@ struct Point
 	float pos[3];
 };
 
-FBX_READER_API bool loadFBX(const char * filename, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes, std::vector<JointData> &jef);
+FBX_READER_API bool loadFBX(const char * filename, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes, AnimationData &animation);
 //FBX_READER_API void processData(FbxNode* node, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes);
 FBX_READER_API bool init();
 FBX_READER_API bool loadScene(const char * filename);

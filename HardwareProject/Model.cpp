@@ -152,10 +152,10 @@ bool Model::loadModelFBX(const char * file_name)
 {
 	std::vector<Vertex> _vertices;
 	
-	loadFBX(file_name, _vertices, vertexIndexes , joints);
+	loadFBX(file_name, _vertices, vertexIndexes , animation);
 
 	isFBX = true;
-	for (int i = 0; i < vertexIndexes.size(); i++)
+	for (unsigned int i = 0; i < vertexIndexes.size(); i++)
 	{
 		VertexPositionUVNormal vertex;
 		Vertex t = _vertices[i];

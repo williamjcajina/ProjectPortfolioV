@@ -31,14 +31,14 @@ class SceneRenderer
 		unsigned int m_model_indexCount;
 		DirectX::XMFLOAT4X4 worldMatrix;
 		unsigned int m_model_vertexCount;
-		std::vector<JointData> joints;
+		Model* model;
 		std::vector<Line> bones;
 		bool isFBX;
 		const char* name = nullptr;
 	};
 public:
 	
-	
+	Line line;
 	XTime timer;
 	SceneRenderer();
 	~SceneRenderer();
@@ -56,6 +56,7 @@ public:
 	float mouseSpeed = 0.020f;
 	float mouseSensitivity = 100.0f;
 	bool	buttons[256];
+	bool	prevButtons[256];
 	float currMousePos[2];
 	float preMousePos[2];
 
@@ -66,14 +67,15 @@ public:
 	void UpdateCamera(MSG msg, XTime timer);
 
 	void drawJoint(JointData joint);
-	void drawBone(Line bone);
 	void updateConstanBufferModel(DirectX::XMFLOAT4X4 model);
 	void drawModel( ModelBuffers model);
-	void createBonesBuffer(ModelBuffers &model);
 	void createAxisBuffer();
 	void debugRender(ModelBuffers model);
 	void drawAxis(XMFLOAT4X4 matrix);
+	void draWLine(XMFLOAT3 x, XMFLOAT3 y);
+	void createLineBuffer();
 	void Shutdown();
+	std::vector<JointData> currentPose(ModelBuffers model);
 
 };
 

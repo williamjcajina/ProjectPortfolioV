@@ -40,7 +40,7 @@ public:
 	void loadModel(const char* file_name);
 	bool loadModelFBX(const char* file_name);
 	unsigned short *indices;
-	std::vector<JointData> joints;
+	AnimationData animation;
 	std::vector<DirectX::XMFLOAT3> vertices;
 	std::vector<DirectX::XMFLOAT3> uvs;
 	std::vector<DirectX::XMFLOAT3> normals;

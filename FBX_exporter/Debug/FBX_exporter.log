@@ -1,18 +1,7 @@
 ﻿  FBX_exporter.cpp
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(265): warning C4018: '<': signed/unsigned mismatch
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(280): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(281): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(282): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(283): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(285): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(286): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(287): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(288): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(290): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(291): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(292): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(293): warning C4244: '=': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(332): warning C4715: 'getSkeletonRoot': not all control paths return a value
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(384): warning C4244: 'initializing': conversion from 'fbxsdk::FbxLongLong' to 'unsigned int', possible loss of data
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(391): warning C4244: '=': conversion from 'fbxsdk::FbxLongLong' to 'double', possible loss of data
+c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(407): warning C4244: '=': conversion from 'fbxsdk::FbxLongLong' to 'double', possible loss of data
      Creating library C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.lib and object C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.exp
   FBX_exporter.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.dll
   FBX_exporter.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.pdb (Full PDB)

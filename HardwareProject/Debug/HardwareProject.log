@@ -1,2 +1,5 @@
-﻿  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.exe
+﻿  SceneRenderer.cpp
+c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(785): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+c:\users\will\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(786): warning C4018: '>': signed/unsigned mismatch
+  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.exe
   HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.pdb (Full PDB)
