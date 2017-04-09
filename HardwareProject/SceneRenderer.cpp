@@ -472,28 +472,22 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 		}
 }
 
-void SceneRenderer::drawJoint(JointData joint)
+void SceneRenderer::drawJoint(JointData &joint)
 {
-
+	
 	if (!debug.joints)
 		return;
 	UINT stride = sizeof(VertexPositionColor);
 	UINT offset = 0;
 	auto context = Resources.context;
 	
-	DirectX::XMMATRIX scaling = DirectX::XMMatrixScaling(5*joint.scale.x, 5*joint.scale.y, 5*joint.scale.z);
+	
+
 
 	
-	XMMATRIX translation = DirectX::XMMatrixTranslation(joint.translation.x, joint.translation.y, joint.translation.z);
-	
-	XMMATRIX result = XMMatrixMultiply(translation, DirectX::XMMatrixIdentity());
-	
-	result = DirectX::XMMatrixTranspose(result);
-	//result = XMMatrixMultiply(result, scaling);
 	
 	
-	
-	XMStoreFloat4x4(&Models[1].worldMatrix, result);
+	Models[1].worldMatrix = buildMatrix(joint.translation, joint.rotation, joint.scale);
 
   
 
@@ -610,7 +604,7 @@ void SceneRenderer::debugRender(ModelBuffers model)
 	context->IASetIndexBuffer(model.m_model_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	context->IASetVertexBuffers(0, 1, &model.m_model_vertexBuffer, &stride, &offset);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	//context->DrawIndexed(model.m_model_indexCount, 0, 0);
+	/*context->DrawIndexed(model.m_model_indexCount, 0, 0);*/
 	
 	
 	if (!model.isFBX)
@@ -621,22 +615,29 @@ void SceneRenderer::debugRender(ModelBuffers model)
 	{
 		drawJoint(current[i]);
 	
-		DirectX::XMMATRIX scaling = DirectX::XMMatrixScaling(5, 5, 5);
+		
+		
+		
+		
 
-		
-		XMMATRIX translation = DirectX::XMMatrixTranslation(current[i].translation.x, current[i].translation.y, current[i].translation.z);
-		XMMATRIX result = XMMatrixMultiply(translation, DirectX::XMMatrixIdentity());
-		result = DirectX::XMMatrixTranspose(result);
-		result = XMMatrixMultiply(result, scaling);
 		XMFLOAT4X4 axis;
-		XMStoreFloat4x4(&axis, result);
-		drawAxis(axis);
+		axis = buildMatrix(current[i].translation, current[i].rotation, current[i].scale);
+		/*drawAxis(axis);*/
 		
-		XMFLOAT3 x(current[i].translation.x, current[i].translation.y, current[i].translation.z);
+		
 		if (current[i].parentIndex == -1)
 			continue;
-		XMFLOAT3 y(current[current[i].parentIndex].translation.x, current[current[i].parentIndex].translation.y, current[current[i].parentIndex].translation.z);
-		draWLine(x, y);
+		
+		
+		XMFLOAT3 x,y;
+		x.x= current[i].translation.x;
+		x.y = current[i].translation.y;
+		x.z = current[i].translation.z;
+
+		y.x = current[current[i].parentIndex].translation.x;
+		y.y = current[current[i].parentIndex].translation.y;
+		y.z = current[current[i].parentIndex].translation.z;
+		draWLine(x,y);
 	
 	}
 
@@ -656,7 +657,8 @@ void SceneRenderer::drawAxis(XMFLOAT4X4 matrix)
 
 
 
-
+	
+	
 	updateConstanBufferModel(matrix);
 
 	context->PSSetShader(Resources.pixelShader, nullptr, 0);
@@ -672,25 +674,18 @@ void SceneRenderer::drawAxis(XMFLOAT4X4 matrix)
 
 void SceneRenderer::draWLine(XMFLOAT3 x, XMFLOAT3 y)
 {
-
+	
 	UINT stride = sizeof(VertexPositionColor);
 	UINT offset = 0;
 	auto context = Resources.context;
-
-
-
-
-
-
-
 
 	D3D11_MAPPED_SUBRESOURCE mapSubRes;
 	ZeroMemory(&mapSubRes, sizeof(mapSubRes));
 
 	const int  vertsNumber = 2;
 	VertexPositionColor modelVertices[vertsNumber] =
-	{ { x, XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-	{ y, XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+	{ { XMFLOAT3(x.x,x.y,x.z), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+	{ XMFLOAT3(y.x,y.y,y.z), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
 
 
 	};
@@ -703,10 +698,12 @@ void SceneRenderer::draWLine(XMFLOAT3 x, XMFLOAT3 y)
 
 	context->Unmap(line.m_model_vertexBuffer, NULL);
 
-
+	XMFLOAT4X4 identity;
+	XMStoreFloat4x4(&identity, DirectX::XMMatrixIdentity());
+	updateConstanBufferModel(identity);
 
 	context->RSSetState(0);
-	;
+	
 	
 	context->PSSetShader(Resources.pixelShader, nullptr, 0);
 
@@ -714,6 +711,28 @@ void SceneRenderer::draWLine(XMFLOAT3 x, XMFLOAT3 y)
 	context->IASetVertexBuffers(0, 1, &line.m_model_vertexBuffer, &stride, &offset);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 	context->DrawIndexed(2, 0, 0);
+}
+
+XMFLOAT4X4 SceneRenderer::buildMatrix(XMFLOAT4 pos, XMFLOAT4 rot, XMFLOAT4 sca)
+{
+	DirectX::XMVECTOR scale, translation, rotation, quaternion;
+
+	scale = DirectX::XMVectorSet(sca.x,sca.y,sca.z ,sca.w);
+	translation = DirectX::XMVectorSet(pos.x,pos.y,pos.z,pos.w);
+	rotation = DirectX::XMVectorSet(0, 0, 0, 0);
+	quaternion = DirectX::XMVectorSet(rot.x,rot.y,rot.z,rot.w);
+
+
+
+	
+	DirectX::XMMATRIX matrix = DirectX::XMMatrixAffineTransformation(scale, rotation, quaternion, translation);
+
+
+	matrix = DirectX::XMMatrixTranspose(matrix);
+
+	XMFLOAT4X4 result;
+	XMStoreFloat4x4(&result, matrix);
+		return result;
 }
 
 void SceneRenderer::createLineBuffer()
@@ -743,10 +762,6 @@ void SceneRenderer::createLineBuffer()
 
 
 	unsigned short modelIndices[2] = { 0,1 };
-
-
-
-
 	D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
 	indexBufferData.pSysMem = modelIndices;
 	indexBufferData.SysMemPitch = 0;
@@ -781,13 +796,58 @@ void SceneRenderer::Shutdown()
 
 std::vector<JointData> SceneRenderer::currentPose(ModelBuffers model)
 {
-	 
-	int frame = timer.TotalTime()*60;
-	if (frame > model.model->animation.frames.size() - 2)
+
+
+	if (timer.TotalTime() > model.model->animation.duration)
 	{
-		frame = 1;
 		timer.Restart();
 	}
-	return model.model->animation.frames[frame+1].joints;
+	
+
+	KeyFrameData next;
+	KeyFrameData prev;
+	std::vector<JointData> pose;
+	
+	float ratio;
+	float endTime = 0;
+	float startTime = 0;
+
+	for (unsigned int i = 0; i < model.model->animation.frames.size(); i++)
+	{
+
+		if ((model.model->animation.frames[i].time) > timer.TotalTime())
+		{
+			next = model.model->animation.frames[i];
+
+			if (i == 0)
+				prev = model.model->animation.frames[model.model->animation.frames.size() - 1];
+			else
+				prev = model.model->animation.frames[i - 1];
+
+			break;
+		}
+	}
+
+	startTime = prev.time;
+	endTime = next.time;
+
+	if (prev.time > next.time)
+		startTime = 0;
+
+	ratio = (timer.TotalTime() - startTime) / (endTime - startTime);
+
+	for (int j = 0; j < prev.joints.size(); j++)
+	{
+		JointData p;
+		p.translation.x = prev.joints[j].translation.x + (next.joints[j].translation.x - prev.joints[j].translation.x)*ratio;
+		p.translation.y = prev.joints[j].translation.y + (next.joints[j].translation.y - prev.joints[j].translation.y)*ratio;
+		p.translation.z = prev.joints[j].translation.z + (next.joints[j].translation.z - prev.joints[j].translation.z)*ratio;
+		
+		p.parentIndex = prev.joints[j].parentIndex;
+		pose.push_back(p);
+	}
+	
+	//return model.model->animation.frames[10].joints;
+	return pose;
 }
 

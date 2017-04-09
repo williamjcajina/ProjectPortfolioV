@@ -6,29 +6,28 @@
 #else
 #define FBX_READER_API __declspec(dllimport)
 #endif
-
+#include <DirectXMath.h>
 #include <vector>
 #include <unordered_map>
 #include <string>
 struct Vertex
 {
+	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT2 UV;
+	DirectX::XMFLOAT3 normal;
+	
+};
 
-	float x, y, z;
-	float tu, tv;
-	float nx, ny, nz;
-};
-struct vect
-{
-	float x, y, z, w;
-};
 struct JointData
 {
+	DirectX::XMFLOAT4 translation;
+	DirectX::XMFLOAT4 rotation;
+	DirectX::XMFLOAT4 scale;
+	
 	int parentIndex;
-	vect rotation;
-	vect translation;
-	vect scale;
 	std::string name;
-	double matrix[16];
+	
+
 };
 
 
@@ -46,10 +45,10 @@ struct AnimationData
 	double duration;
 };
 
-struct Point
-{
-	float pos[3];
-};
+//struct Point
+//{
+//	float pos[3];
+//};
 
 FBX_READER_API bool loadFBX(const char * filename, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes, AnimationData &animation);
 //FBX_READER_API void processData(FbxNode* node, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes);

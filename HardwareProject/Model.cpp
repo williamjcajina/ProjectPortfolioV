@@ -160,16 +160,13 @@ bool Model::loadModelFBX(const char * file_name)
 		VertexPositionUVNormal vertex;
 		Vertex t = _vertices[i];
 
-		vertex.pos.x = t.x;
-		vertex.pos.y = t.y;
-		vertex.pos.z = t.z;
+		vertex.pos = t.position;
+		
 
-		vertex.normal.x = t.nx;
-		vertex.normal.y = t.ny;
-		vertex.normal.z = t.nz;
-
-		vertex.uv.x = t.tu;
-		vertex.uv.y = t.tv;
+		vertex.normal = t.normal;
+		
+		vertex.uv.x = t.UV.x;
+		vertex.uv.y = t.UV.y;
 		vertex.uv.z = 0;
 		vertexList.push_back(vertex);
 	}

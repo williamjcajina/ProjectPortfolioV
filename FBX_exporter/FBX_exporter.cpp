@@ -4,7 +4,7 @@
 
 FbxManager* mFBXManager;
 FbxScene* mFBXScene;
-std::unordered_map<unsigned int, Point*> points;
+std::unordered_map<unsigned int, DirectX::XMFLOAT3> points;
 
 
 
@@ -193,7 +193,7 @@ FBX_READER_API void getNodeVertexData(FbxNode* inNode,std::vector<Vertex> &verti
 		for (unsigned int j = 0; j < 3; j++)
 		{
 			int pointIndex = currMesh->GetPolygonVertex(i, j);
-			Point* currPoint = points[pointIndex];
+			DirectX::XMFLOAT3 currPoint = points[pointIndex];
 
 			getNormal(currMesh, pointIndex, vCounter, normal);
 			for (int k = 0; k < 1; ++k)
@@ -201,16 +201,15 @@ FBX_READER_API void getNodeVertexData(FbxNode* inNode,std::vector<Vertex> &verti
 
 
 			Vertex temp;
-			temp.x = currPoint->pos[0];
-			temp.y = currPoint->pos[1];
-			temp.z = currPoint->pos[2];
+			temp.position = currPoint;
+			
 
-			temp.nx = normal[0];
-			temp.ny = normal[1];
-			temp.nz = normal[2];
+			 temp.normal.x= normal[0];
+			 temp.normal.y = normal[1];
+			 temp.normal.z = normal[2];
 
-			temp.tu = uv[0];
-			temp.tv = uv[1];
+			temp.UV.x = uv[0];
+			temp.UV.y = uv[1];
 
 			vertices.push_back(temp);
 			vertexIndexes.push_back(vCounter);
@@ -223,10 +222,10 @@ FBX_READER_API void getNodeVertexData(FbxNode* inNode,std::vector<Vertex> &verti
 		
 
 	}
-	for (auto itr = points.begin(); itr != points.end(); ++itr)
+	/*for (auto itr = points.begin(); itr != points.end(); ++itr)
 	{
 		delete itr->second;
-	}
+	}*/
 	points.clear();
 	
 }
@@ -236,11 +235,12 @@ FBX_READER_API void processPoints(FbxNode* node)
 	unsigned int pointCount = currMesh->GetControlPointsCount();
 	for (unsigned int i = 0; i < pointCount; ++i)
 	{
-		Point* currPoint = new Point();
+		
+		DirectX::XMFLOAT3 currPoint;
 
-		currPoint->pos[0] = static_cast<float>(currMesh->GetControlPointAt(i).mData[0]);
-		currPoint->pos[1] = static_cast<float>(currMesh->GetControlPointAt(i).mData[1]);
-		currPoint->pos[2] = static_cast<float>(currMesh->GetControlPointAt(i).mData[2]);
+		currPoint.x = static_cast<float>(currMesh->GetControlPointAt(i).mData[0]);
+		currPoint.y = static_cast<float>(currMesh->GetControlPointAt(i).mData[1]);
+		currPoint.z = static_cast<float>(currMesh->GetControlPointAt(i).mData[2]);
 
 		points[i] = currPoint;
 	}
@@ -293,31 +293,35 @@ FBX_READER_API void exportData(AnimationData &anim)
 			FbxVector4 pos = animationClip.frames[i].joints[j].mGlobalBindposeInverse.GetT();
 
 			FbxVector4 sca = animationClip.frames[i].joints[j].mGlobalBindposeInverse.GetS();
+			FbxQuaternion quat = animationClip.frames[i].joints[j].mGlobalBindposeInverse.GetQ();
+			 
+			
 
-			jd.rotation.x = (float)rot.mData[0];
-			jd.rotation.y = (float)rot.mData[1];
-			jd.rotation.z = (float)rot.mData[2];
-			jd.rotation.w = (float)rot.mData[3];
+			jd.rotation = DirectX::XMFLOAT4(quat.mData[0], quat.mData[1], quat.mData[2], quat.mData[3]);
+			jd.translation = DirectX::XMFLOAT4((float)pos.mData[0], (float)pos.mData[1], (float)pos.mData[2], (float)pos.mData[3]);
+			jd.scale = DirectX::XMFLOAT4((float)sca.mData[0], (float)sca.mData[1], (float)sca.mData[2], (float)sca.mData[3]);
+			/*DirectX::XMVECTOR scale, translation, rotation, quaternion;
 
-			jd.translation.x = (float)pos.mData[0];
-			jd.translation.y = (float)pos.mData[1];
-			jd.translation.z = (float)pos.mData[2];
-			jd.translation.w = (float)pos.mData[3];
+			scale = DirectX::XMVectorSet((float)sca.mData[0], (float)sca.mData[1], (float)sca.mData[2], (float)sca.mData[3]);
+			translation = DirectX::XMVectorSet((float)pos.mData[0], (float)pos.mData[1], (float)pos.mData[2], (float)pos.mData[3]);
+			rotation = DirectX::XMVectorSet(0, 0, 0, 0);
+			quaternion = DirectX::XMVectorSet(quat.mData[0], quat.mData[1], quat.mData[2], quat.mData[3]);*/
+			
+		
+			
+			/*
+			DirectX::XMMATRIX matrix = DirectX::XMMatrixAffineTransformation(scale, rotation, quaternion, translation);
+		
+			
+			matrix = DirectX::XMMatrixTranspose(matrix);*/
 
-			jd.scale.x = (float)sca.mData[0];
-			jd.scale.y = (float)sca.mData[1];
-			jd.scale.z = (float)sca.mData[2];
-			jd.scale.w = (float)sca.mData[3];
+		
+			/*jd.matrix = matrix;*/
 
-			int k = 0;
-			for (int m = 0; m < 4; m++)
-			{
-				for (int n = 0; n < 4; n++)
-				{
-					jd.matrix[k] = animationClip.frames[i].joints[j].mGlobalBindposeInverse.mData[m][n];
-					k++;
-				}
-			}
+			
+			
+
+		
 
 			out.time = animationClip.frames[i].time;
 			out.name = animationClip.frames[i].name;
@@ -388,7 +392,7 @@ FBX_READER_API void GetAnimationData()
 		KeyFrame frame;
 		FbxTime currTime;
 		currTime.SetFrame(i, FbxTime::eFrames24);
-		frame.time = currTime.Get();
+		frame.time = currTime.GetMilliSeconds();
 		for (unsigned int j = 0; j < joints.size(); j++)
 		{
 			Joint currJoint;
@@ -404,7 +408,7 @@ FBX_READER_API void GetAnimationData()
 		animationClip.frames.push_back(frame);
 		
 	}
-	animationClip.duration = time.Get();
+	animationClip.duration = time.GetMilliSeconds();
 
 
 

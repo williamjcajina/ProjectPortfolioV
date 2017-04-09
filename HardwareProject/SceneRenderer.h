@@ -66,13 +66,14 @@ public:
 	void Render();
 	void UpdateCamera(MSG msg, XTime timer);
 
-	void drawJoint(JointData joint);
+	void drawJoint(JointData &joint);
 	void updateConstanBufferModel(DirectX::XMFLOAT4X4 model);
 	void drawModel( ModelBuffers model);
 	void createAxisBuffer();
 	void debugRender(ModelBuffers model);
 	void drawAxis(XMFLOAT4X4 matrix);
 	void draWLine(XMFLOAT3 x, XMFLOAT3 y);
+	XMFLOAT4X4 buildMatrix(XMFLOAT4 pos, XMFLOAT4 rot, XMFLOAT4 sca);
 	void createLineBuffer();
 	void Shutdown();
 	std::vector<JointData> currentPose(ModelBuffers model);

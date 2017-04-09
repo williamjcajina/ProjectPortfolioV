@@ -1,7 +1,7 @@
 ﻿  FBX_exporter.cpp
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(384): warning C4244: 'initializing': conversion from 'fbxsdk::FbxLongLong' to 'unsigned int', possible loss of data
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(391): warning C4244: '=': conversion from 'fbxsdk::FbxLongLong' to 'double', possible loss of data
-c:\users\will\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(407): warning C4244: '=': conversion from 'fbxsdk::FbxLongLong' to 'double', possible loss of data
-     Creating library C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.lib and object C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.exp
-  FBX_exporter.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.dll
-  FBX_exporter.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.pdb (Full PDB)
+c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(300): warning C4244: 'argument': conversion from 'fbxsdk::FbxDouble' to 'float', possible loss of data
+c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(388): warning C4244: 'initializing': conversion from 'fbxsdk::FbxLongLong' to 'unsigned int', possible loss of data
+c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(395): warning C4244: '=': conversion from 'fbxsdk::FbxLongLong' to 'double', possible loss of data
+c:\users\william\desktop\projectportfoliov\fbx_exporter\fbx_exporter.cpp(411): warning C4244: '=': conversion from 'fbxsdk::FbxLongLong' to 'double', possible loss of data
+  FBX_exporter.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\FBX_exporter.dll
+  FBX_exporter.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\FBX_exporter.pdb (Full PDB)
