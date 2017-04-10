@@ -406,9 +406,11 @@ FBX_READER_API void GetAnimationData()
 
 		}
 		animationClip.frames.push_back(frame);
+		if(i>0)
+		frame.time -= animationClip.frames[1].time;
 		
 	}
-	animationClip.duration = time.GetMilliSeconds();
+	animationClip.duration = time.GetMilliSeconds() - animationClip.frames[1].time;
 
 
 

@@ -17,8 +17,9 @@ SceneRenderer::SceneRenderer()
 
 	}
 	m_loadingComplete = false;
-	debug.joints = false;
-	debug.bones = false;
+	debug.joints = true;
+	debug.bones = true;
+	debug.axis = true;
 
 	
 }
@@ -93,11 +94,11 @@ void SceneRenderer::createBuffers()
 
 		static const VertexPositionColor pyramidVertices[] =
 		{
-			{ XMFLOAT3(-0.5f, 0.0f, 0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3(0.5, 0.0f,  0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3(-0.5,  0.0f, -0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3(0.5,  0.0f, -0.5), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3(0.0,  1.0f, 0.0), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) }
+			{ XMFLOAT3(-1.5f, 0.0f, 1.5f), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(1.5, 0.0f,  1.5f), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(-1.5,  0.0f, -1.5f), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(1.5,  0.0f, -1.5), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+			{ XMFLOAT3(0.0,  2.0f, 0.0), XMFLOAT3(0.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) }
 
 
 		};
@@ -234,7 +235,8 @@ void SceneRenderer::createBuffers()
 			if (model->isFBX)
 			{
 				Models[i].model = model;
-			
+				Models[i].interpolator = new Interpolator;
+				Models[i].interpolator->animation = &Models[i].model->animation;
 				Models[i].isFBX = true;
 			}
 		}
@@ -415,7 +417,6 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 	}
 
 	
-	debug.joints = !buttons['J'];
 	
 
 
@@ -477,6 +478,7 @@ void SceneRenderer::drawJoint(JointData &joint)
 	
 	if (!debug.joints)
 		return;
+	
 	UINT stride = sizeof(VertexPositionColor);
 	UINT offset = 0;
 	auto context = Resources.context;
@@ -610,7 +612,8 @@ void SceneRenderer::debugRender(ModelBuffers model)
 	if (!model.isFBX)
 		return;
 	
-	std::vector<JointData> current = currentPose(model);
+	model.interpolator->SetTime(timer);
+	std::vector<JointData> current = model.interpolator->currentPose();
 	for (unsigned int i = 0; i <current.size() ; i++)
 	{
 		drawJoint(current[i]);
@@ -622,7 +625,7 @@ void SceneRenderer::debugRender(ModelBuffers model)
 
 		XMFLOAT4X4 axis;
 		axis = buildMatrix(current[i].translation, current[i].rotation, current[i].scale);
-		/*drawAxis(axis);*/
+		drawAxis(axis);
 		
 		
 		if (current[i].parentIndex == -1)
@@ -650,7 +653,8 @@ void SceneRenderer::debugRender(ModelBuffers model)
 
 void SceneRenderer::drawAxis(XMFLOAT4X4 matrix)
 {
-
+	if (!debug.axis)
+		return;
 	auto context = Resources.context;
 
 	context->RSSetState(0);
@@ -794,60 +798,5 @@ void SceneRenderer::Shutdown()
 	Resources.Shutdown();
 }
 
-std::vector<JointData> SceneRenderer::currentPose(ModelBuffers model)
-{
 
-
-	if (timer.TotalTime() > model.model->animation.duration)
-	{
-		timer.Restart();
-	}
-	
-
-	KeyFrameData next;
-	KeyFrameData prev;
-	std::vector<JointData> pose;
-	
-	float ratio;
-	float endTime = 0;
-	float startTime = 0;
-
-	for (unsigned int i = 0; i < model.model->animation.frames.size(); i++)
-	{
-
-		if ((model.model->animation.frames[i].time) > timer.TotalTime())
-		{
-			next = model.model->animation.frames[i];
-
-			if (i == 0)
-				prev = model.model->animation.frames[model.model->animation.frames.size() - 1];
-			else
-				prev = model.model->animation.frames[i - 1];
-
-			break;
-		}
-	}
-
-	startTime = prev.time;
-	endTime = next.time;
-
-	if (prev.time > next.time)
-		startTime = 0;
-
-	ratio = (timer.TotalTime() - startTime) / (endTime - startTime);
-
-	for (int j = 0; j < prev.joints.size(); j++)
-	{
-		JointData p;
-		p.translation.x = prev.joints[j].translation.x + (next.joints[j].translation.x - prev.joints[j].translation.x)*ratio;
-		p.translation.y = prev.joints[j].translation.y + (next.joints[j].translation.y - prev.joints[j].translation.y)*ratio;
-		p.translation.z = prev.joints[j].translation.z + (next.joints[j].translation.z - prev.joints[j].translation.z)*ratio;
-		
-		p.parentIndex = prev.joints[j].parentIndex;
-		pose.push_back(p);
-	}
-	
-	//return model.model->animation.frames[10].joints;
-	return pose;
-}
 

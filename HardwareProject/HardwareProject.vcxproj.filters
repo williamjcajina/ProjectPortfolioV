@@ -22,6 +22,9 @@
     <Filter Include="ModelImporter">
       <UniqueIdentifier>{e273f83e-8257-49df-baff-86f1e221e3c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Interpolator">
+      <UniqueIdentifier>{60ba9187-ebe5-4b07-a5f6-4d35119e5873}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -38,6 +41,9 @@
     </ClCompile>
     <ClCompile Include="Model.cpp">
       <Filter>ModelImporter</Filter>
+    </ClCompile>
+    <ClCompile Include="Interpolator.cpp">
+      <Filter>Interpolator</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -58,6 +64,9 @@
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>ModelImporter</Filter>
+    </ClInclude>
+    <ClInclude Include="Interpolator.h">
+      <Filter>Interpolator</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

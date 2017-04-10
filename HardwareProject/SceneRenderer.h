@@ -2,6 +2,7 @@
 #include "D3dclass.h"
 #include "XTime.h"
 #include "Model.h"
+#include "Interpolator.h"
 class SceneRenderer
 {
 	struct Debug
@@ -32,6 +33,7 @@ class SceneRenderer
 		DirectX::XMFLOAT4X4 worldMatrix;
 		unsigned int m_model_vertexCount;
 		Model* model;
+		Interpolator* interpolator;
 		std::vector<Line> bones;
 		bool isFBX;
 		const char* name = nullptr;
@@ -76,7 +78,7 @@ public:
 	XMFLOAT4X4 buildMatrix(XMFLOAT4 pos, XMFLOAT4 rot, XMFLOAT4 sca);
 	void createLineBuffer();
 	void Shutdown();
-	std::vector<JointData> currentPose(ModelBuffers model);
+
 
 };
 

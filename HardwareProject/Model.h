@@ -1,19 +1,22 @@
 #pragma once
-#include "D3dclass.h"
 
-#include "Model.h"
+#include "D3dclass.h"
+#include "XTime.h"
 #include "ShaderStructures.h"
 #include <string>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include "../FBX_exporter/FBX_Exporter.h"
+
 using namespace std;
 class Model 
 {
 
 
 public:
+
+
 	struct VertexPositionUVNormal
 	{
 		DirectX::XMFLOAT3 pos;
@@ -53,8 +56,7 @@ public:
 	void CreateVertexList();
 	void CalculateVectors();
 	unsigned int vertsNumber =0;
-
-
+	
 
 
 
