@@ -20,6 +20,7 @@ SceneRenderer::SceneRenderer()
 	debug.joints = true;
 	debug.bones = true;
 	debug.axis = true;
+	debug.wireframe = false;
 
 	
 }
@@ -341,8 +342,10 @@ void SceneRenderer::Render()
 
 
 	
-	
-	debugRender(Models[2]);
+	if (debug.on)
+		debugRender(Models[2]);
+	else
+		drawModel(Models[2]);
 	drawModel(Models[0]);
 
 	
@@ -354,8 +357,14 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 	const float delta_time = (float)timer.SmoothDelta();
 	/*bool mLClick;*/
 
-	if (msg.wParam < 256 && msg.wParam>0 && msg.wParam == 'J')
-	prevButtons[msg.wParam] = buttons[msg.wParam];
+	if (msg.wParam < 256 )
+	{
+		prevButtons['P'] = buttons['P'];
+		prevButtons['J'] = buttons['J'];
+		prevButtons['B'] = buttons['B'];
+		prevButtons['U'] = buttons['U'];
+		prevButtons['K'] = buttons['K'];
+	}
 	
 	if (msg.message == WM_KEYDOWN)
 		buttons[msg.wParam] = true;
@@ -416,10 +425,27 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 		XMStoreFloat4x4(&m_camera, result);
 	}
 
+	if (buttons['P'] && !prevButtons['P'])
+	{
+		debug.wireframe = !debug.wireframe;
+	}
 	
-	
-
-
+	if (buttons['J'] && !prevButtons['J'])
+	{
+		debug.joints = !debug.joints;
+	}
+	if (buttons['B'] && !prevButtons['B'])
+	{
+		debug.bones = !debug.bones;
+	}
+	if (buttons['U'] && !prevButtons['U'])
+	{
+		debug.on = !debug.on;
+	}
+	if (buttons['K'] && !prevButtons['K'])
+	{
+		debug.axis = !debug.axis;
+	}
 	
 		currMousePos[0] =(float) msg.pt.x;
 		currMousePos[1] =(float) msg.pt.y;
@@ -601,12 +627,17 @@ void SceneRenderer::debugRender(ModelBuffers model)
 	UINT stride = sizeof(VertexPositionColor);
 	UINT offset = 0;
 	auto context = Resources.context;
+	
 	updateConstanBufferModel(model.worldMatrix);
+	
+	
 	context->RSSetState(Resources.m_rasterState);
+
 	context->IASetIndexBuffer(model.m_model_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	context->IASetVertexBuffers(0, 1, &model.m_model_vertexBuffer, &stride, &offset);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	/*context->DrawIndexed(model.m_model_indexCount, 0, 0);*/
+	if (debug.wireframe)
+	context->DrawIndexed(model.m_model_indexCount, 0, 0);
 	
 	
 	if (!model.isFBX)
@@ -678,7 +709,8 @@ void SceneRenderer::drawAxis(XMFLOAT4X4 matrix)
 
 void SceneRenderer::draWLine(XMFLOAT3 x, XMFLOAT3 y)
 {
-	
+	if (!debug.bones)
+		return;
 	UINT stride = sizeof(VertexPositionColor);
 	UINT offset = 0;
 	auto context = Resources.context;

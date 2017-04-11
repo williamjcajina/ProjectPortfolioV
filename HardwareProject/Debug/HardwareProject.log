@@ -1,10 +1,3 @@
-﻿  main.cpp
-  SceneRenderer.cpp
-  Interpolator.cpp
-c:\users\william\desktop\projectportfoliov\hardwareproject\interpolator.cpp(15): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\hardwareproject\interpolator.cpp(65): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\hardwareproject\interpolator.cpp(66): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\hardwareproject\interpolator.cpp(73): warning C4018: '<': signed/unsigned mismatch
-  Generating Code...
-  HardwareProject.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\HardwareProject.exe
-  HardwareProject.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\HardwareProject.pdb (Full PDB)
+﻿  SceneRenderer.cpp
+  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.exe
+  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.pdb (Full PDB)
