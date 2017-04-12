@@ -1,18 +1,4 @@
-﻿  main.cpp
-  SceneRenderer.cpp
-  Model.cpp
-c:\users\will\desktop\projectportfoliov\hardwareproject\model.cpp(173): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\hardwareproject\model.cpp(174): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\hardwareproject\model.cpp(175): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\hardwareproject\model.cpp(176): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-  D3dclass.cpp
-  Generating Code...
-  Compiling...
-  Interpolator.cpp
-c:\users\will\desktop\projectportfoliov\hardwareproject\interpolator.cpp(15): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\hardwareproject\interpolator.cpp(65): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\hardwareproject\interpolator.cpp(66): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-c:\users\will\desktop\projectportfoliov\hardwareproject\interpolator.cpp(73): warning C4018: '<': signed/unsigned mismatch
-  Generating Code...
-  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.exe
-  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.pdb (Full PDB)
+﻿  SceneRenderer.cpp
+c:\users\william\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(848): warning C4018: '<': signed/unsigned mismatch
+  HardwareProject.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\HardwareProject.exe
+  HardwareProject.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\HardwareProject.pdb (Full PDB)

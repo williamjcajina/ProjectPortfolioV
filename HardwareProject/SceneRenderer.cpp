@@ -34,6 +34,15 @@ SceneRenderer::~SceneRenderer()
 	
 }
 
+void SceneRenderer::init(D3dclass resource)
+{
+	Resources = resource;
+	createBuffers();
+	createConstantBuffers();
+	setCamera();
+
+}
+
 void SceneRenderer::createBuffers()
 {   
 	auto createFloor(); {
@@ -189,8 +198,9 @@ void SceneRenderer::createBuffers()
 				modelVertices[i].pos = model->vertexList[i].pos;
 				modelVertices[i].color = model->vertexList[i].uv;
 				modelVertices[i].normal = model->vertexList[i].normal;
-				/*modelVertices[i].tangent = model.vertexList[i].tangent;
-				modelVertices[i].binormal = model.vertexList[i].binormal;*/
+				modelVertices[i].jointIndex = model->vertexList[i].jointIndex;
+				modelVertices[i].weights = model->vertexList[i].weights;
+			
 
 
 			}
@@ -266,7 +276,15 @@ void SceneRenderer::createConstantBuffers()
 	HRESULT result = Resources.device->CreateBuffer(&matrixBufferDesc, NULL, &m_constantBuffer);
 
 	
+	D3D11_BUFFER_DESC jointMatrixBufferDesc;
 
+	jointMatrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	jointMatrixBufferDesc.ByteWidth = sizeof(JointMatrix);
+	jointMatrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	jointMatrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	jointMatrixBufferDesc.MiscFlags = 0;
+	jointMatrixBufferDesc.StructureByteStride = 0;
+	result = Resources.device->CreateBuffer(&jointMatrixBufferDesc, NULL, &m_AnimationBuffer);
 
 }
 
@@ -336,9 +354,7 @@ void SceneRenderer::Render()
 
 
 	context->IASetInputLayout(Resources.layout);
-	context->VSSetShader(Resources.vertexShader, nullptr, 0);
-	
-	context->VSSetConstantBuffers(0, 1, &m_constantBuffer);
+
 
 
 	
@@ -346,6 +362,7 @@ void SceneRenderer::Render()
 		debugRender(Models[2]);
 	else
 		drawModel(Models[2]);
+	
 	drawModel(Models[0]);
 
 	
@@ -533,21 +550,33 @@ void SceneRenderer::drawJoint(JointData &joint)
 
 
 
-void SceneRenderer::updateConstanBufferModel(DirectX::XMFLOAT4X4 model)
+void SceneRenderer::updateConstanBufferModel(DirectX::XMFLOAT4X4 model, bool isFBX)
 {
 	auto context = Resources.context;
 	D3D11_MAPPED_SUBRESOURCE mapSubRes;
 	ZeroMemory(&mapSubRes, sizeof(mapSubRes));
+
+	if(!isFBX)
+	context->VSSetShader(Resources.vertexShader, nullptr, 0);
+	else
+	context->VSSetShader(Resources.skinVertexShader, nullptr, 0);
 	
+	context->VSSetConstantBuffers(0, 1, &m_constantBuffer);
 	m_constantBufferData.model = model;
-
-
+	
 	HRESULT l =context->Map(m_constantBuffer, NULL, D3D11_MAP_WRITE_DISCARD, NULL, &mapSubRes);
-	
-	
 	memcpy(mapSubRes.pData, &m_constantBufferData, sizeof(ModelViewProjectionConstantBuffer));
-	
 	context->Unmap(m_constantBuffer, NULL);
+
+	if (isFBX)
+	{
+		/*context->VSSetConstantBuffers(1, 1, &m_AnimationBuffer);*/
+	/*	context->VSSetShader(Resources.skinVertexShader, nullptr, 0);*/
+	/*	ZeroMemory(&mapSubRes, sizeof(mapSubRes));*/
+		/*l = context->Map(m_AnimationBuffer, 0, D3D11_MAP_WRITE_DISCARD, NULL, &mapSubRes);
+		memcpy(mapSubRes.pData, &m_jointCbufferData, sizeof(JointMatrix));
+		context->Unmap(m_AnimationBuffer, NULL);*/
+	}
 
 }
 
@@ -556,7 +585,7 @@ void SceneRenderer::drawModel(ModelBuffers model)
 	
 	auto context = Resources.context;
 	context->RSSetState(0);
-	updateConstanBufferModel(model.worldMatrix);
+	updateConstanBufferModel(model.worldMatrix,false);
 	context->PSSetShader(Resources.pixelShader, nullptr, 0);
 	UINT stride = sizeof(VertexPositionColor);
 	UINT offset = 0;
@@ -628,7 +657,11 @@ void SceneRenderer::debugRender(ModelBuffers model)
 	UINT offset = 0;
 	auto context = Resources.context;
 	
-	updateConstanBufferModel(model.worldMatrix);
+	
+	model.interpolator->SetTime(timer);
+	std::vector<JointData> current = model.interpolator->currentPose();
+	
+	updateConstanBufferModel(model.worldMatrix, model.isFBX);
 	
 	
 	context->RSSetState(Resources.m_rasterState);
@@ -636,15 +669,19 @@ void SceneRenderer::debugRender(ModelBuffers model)
 	context->IASetIndexBuffer(model.m_model_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	context->IASetVertexBuffers(0, 1, &model.m_model_vertexBuffer, &stride, &offset);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	if (debug.wireframe)
+	
+	
+	
+	/*if (debug.wireframe)*/
 	context->DrawIndexed(model.m_model_indexCount, 0, 0);
 	
 	
 	if (!model.isFBX)
 		return;
 	
-	model.interpolator->SetTime(timer);
-	std::vector<JointData> current = model.interpolator->currentPose();
+	
+	
+	
 	for (unsigned int i = 0; i <current.size() ; i++)
 	{
 		drawJoint(current[i]);
@@ -694,7 +731,7 @@ void SceneRenderer::drawAxis(XMFLOAT4X4 matrix)
 
 	
 	
-	updateConstanBufferModel(matrix);
+	updateConstanBufferModel(matrix,false);
 
 	context->PSSetShader(Resources.pixelShader, nullptr, 0);
 
@@ -736,7 +773,7 @@ void SceneRenderer::draWLine(XMFLOAT3 x, XMFLOAT3 y)
 
 	XMFLOAT4X4 identity;
 	XMStoreFloat4x4(&identity, DirectX::XMMatrixIdentity());
-	updateConstanBufferModel(identity);
+	updateConstanBufferModel(identity,false);
 
 	context->RSSetState(0);
 	
@@ -804,6 +841,23 @@ void SceneRenderer::createLineBuffer()
 	indexBufferData.SysMemSlicePitch = 0;
 	CD3D11_BUFFER_DESC indexBufferDesc(sizeof(unsigned short) * 2, D3D11_BIND_INDEX_BUFFER);
 	Resources.device->CreateBuffer(&indexBufferDesc, &indexBufferData, &line.m_model_indexBuffer);
+}
+
+void SceneRenderer::setAnimationCbuffer(AnimationData anim, std::vector<JointData> currPose)
+{
+	for (int i = 0; i < anim.frames[0].joints.size(); i++)
+	{
+		XMMATRIX curr = XMLoadFloat4x4(&buildMatrix(anim.frames[0].joints[i].translation, anim.frames[0].joints[i].rotation, anim.frames[0].joints[i].scale));
+		
+		XMFLOAT4X4 currInverse;
+		XMStoreFloat4x4(&currInverse, DirectX::XMMatrixInverse(nullptr, curr));
+		m_jointCbufferData.inverseBindPose[i] = currInverse;
+
+		m_jointCbufferData.jointsMatrices[i] = buildMatrix(currPose[i].translation, currPose[i].rotation, currPose[i].scale);
+	  
+		
+	}
+
 }
 
 void SceneRenderer::Shutdown()

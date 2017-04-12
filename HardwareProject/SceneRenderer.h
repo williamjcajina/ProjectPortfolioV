@@ -48,28 +48,38 @@ public:
 	std::vector<ModelBuffers> Models;
 	Line axis;
 	ID3D11Buffer *  m_constantBuffer;
+	ID3D11Buffer *  m_AnimationBuffer;
 	ModelViewProjectionConstantBuffer	m_constantBufferData;
+	JointMatrix m_jointCbufferData;
 	DirectX::XMFLOAT4X4 m_camera;
 
 	Debug debug;
+
+	void init(D3dclass resource);
+	
+	void Render();
+	void UpdateCamera(MSG msg, XTime timer);
+	void Shutdown();
+private:
+	
 	bool	m_loadingComplete;
+	
 	float cameraSpeed = 100.0f;
 	bool tracking;
 	float mouseSpeed = 0.020f;
 	float mouseSensitivity = 100.0f;
+	
 	bool	buttons[256];
 	bool	prevButtons[256];
+	
 	float currMousePos[2];
 	float preMousePos[2];
-
+	
 	void createBuffers();
 	void createConstantBuffers();
 	void setCamera();
-	void Render();
-	void UpdateCamera(MSG msg, XTime timer);
-
 	void drawJoint(JointData &joint);
-	void updateConstanBufferModel(DirectX::XMFLOAT4X4 model);
+	void updateConstanBufferModel(DirectX::XMFLOAT4X4 model, bool isFBX);
 	void drawModel( ModelBuffers model);
 	void createAxisBuffer();
 	void debugRender(ModelBuffers model);
@@ -77,8 +87,8 @@ public:
 	void draWLine(XMFLOAT3 x, XMFLOAT3 y);
 	XMFLOAT4X4 buildMatrix(XMFLOAT4 pos, XMFLOAT4 rot, XMFLOAT4 sca);
 	void createLineBuffer();
-	void Shutdown();
-
+	
+	void setAnimationCbuffer(AnimationData anim, std::vector<JointData> currPose);
 
 };
 

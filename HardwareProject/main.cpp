@@ -66,21 +66,16 @@ DEMO_APP::DEMO_APP(HINSTANCE hinst, WNDPROC proc)
 	RECT window_size = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 	AdjustWindowRect(&window_size, WS_OVERLAPPEDWINDOW, false);
 	
-	window = CreateWindow(	L"DirectXApplication", L"CGS Hardware Project",	WS_OVERLAPPEDWINDOW & ~(WS_THICKFRAME|WS_MAXIMIZEBOX), 
+	window = CreateWindow(	L"DirectXApplication", L"Project Portfolio V",	WS_OVERLAPPEDWINDOW & ~(WS_THICKFRAME|WS_MAXIMIZEBOX), 
 							CW_USEDEFAULT, CW_USEDEFAULT, window_size.right-window_size.left, window_size.bottom-window_size.top,					
 							NULL, NULL,	application, this );												
 
     ShowWindow( window, SW_SHOW );
 
-	d3dclass.setSwapChain(window);
-	d3dclass.setView();
-	d3dclass.createInputLayout();
-	d3dclass.setDepthStuff();
+	d3dclass.init(window);
+	scene.init(d3dclass);
 	
-	scene.Resources = d3dclass;
-	scene.createBuffers();
-	scene.createConstantBuffers();
-	scene.setCamera();
+	
 }
 
 

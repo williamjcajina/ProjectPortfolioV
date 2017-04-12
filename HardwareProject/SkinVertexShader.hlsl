@@ -12,7 +12,8 @@ cbuffer ModelViewProjectionConstantBuffer : register(b0)
 };
 cbuffer ModelViewProjectionConstantBuffer: register(b1)
 {
-    matrix joints[40];
+    matrix jointsInverse[40];
+	matrix jointsCurrent[40];
 
 }
 // Per-vertex data used as input to the vertex shader.
@@ -21,8 +22,8 @@ struct VertexShaderInput
     float3 pos : POSITION;
     float3 uv : UV;
     float3 normal : NORMAL;
-    uint4 blendIndecis : BLENDINDICES;
-    float4 weights : BLENDWEIGHT;
+    float4 blendIndecis : TEXCOORD;
+    float4 weights : BINORMAL;
 
    
 };
@@ -43,11 +44,11 @@ PixelShaderInput main(VertexShaderInput input)
     PixelShaderInput output;
     float4 pos = float4(input.pos, 1.0f);
  
-
+	float3 ab = input.blendIndecis;
     pos = mul(pos, model);
     pos = mul(pos, view);
     pos = mul(pos, projection);
-
+	
     output.pos = pos;
     output.uv = input.uv;
     output.normal = input.normal;

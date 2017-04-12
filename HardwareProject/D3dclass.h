@@ -18,7 +18,10 @@ using namespace DirectX;
 
 	class D3dclass
 	{
-	public:
+
+	public :
+		void init(HWND window);
+		
 		D3dclass();
 		~D3dclass();
 		bool DebugMode =false;
@@ -47,6 +50,6 @@ using namespace DirectX;
 		void createInputLayout();
 		void setDepthStuff();
 		void Shutdown();
-	
+	    
 };
 

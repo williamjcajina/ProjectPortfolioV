@@ -261,7 +261,9 @@ void Model::CreateVertexList()
 		/*vertex.binormal = DirectX::XMFLOAT3{ 0,0,0 };
 		vertex.tangent = DirectX::XMFLOAT3{ 0,0,0 };*/
 
+		
 		vertexList.push_back(vertex);
+
 	}
 
 }

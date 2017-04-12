@@ -24,7 +24,14 @@ public:
 		DirectX::XMFLOAT3 normal;
 		DirectX::XMFLOAT4 jointIndex;
 		DirectX::XMFLOAT4 weights;
-
+		VertexPositionUVNormal()
+		{
+			pos = XMFLOAT3(0, 0, 0);
+			uv = XMFLOAT3(0, 0, 0);
+			normal = XMFLOAT3(0, 0, 0);
+			jointIndex = XMFLOAT4(0, 0, 0,0);
+			weights = XMFLOAT4(0, 0, 0, 0);
+		}
 		/*DirectX::XMFLOAT3 tangent;
 		DirectX::XMFLOAT3 binormal;*/
 	};

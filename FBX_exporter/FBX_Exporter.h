@@ -50,6 +50,7 @@ struct KeyFrameData
 
 struct AnimationData
 {
+	
 	std::vector<KeyFrameData> frames;
 	double duration;
 };
