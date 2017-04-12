@@ -10,11 +10,20 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+
+struct BlendInfo
+{
+	int index;
+	float weight;
+	
+};
 struct Vertex
 {
 	DirectX::XMFLOAT3 position;
 	DirectX::XMFLOAT2 UV;
 	DirectX::XMFLOAT3 normal;
+	std::vector<BlendInfo> blends;
+
 	
 };
 
@@ -45,15 +54,22 @@ struct AnimationData
 	double duration;
 };
 
-//struct Point
-//{
-//	float pos[3];
-//};
+struct Point
+{
+	DirectX::XMFLOAT3 point;
+
+	std::vector<BlendInfo> blends;
+
+	Point()
+	{
+		blends.reserve(4);
+	}
+};
 
 FBX_READER_API bool loadFBX(const char * filename, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes, AnimationData &animation);
 //FBX_READER_API void processData(FbxNode* node, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes);
 FBX_READER_API bool init();
 FBX_READER_API bool loadScene(const char * filename);
-
+FBX_READER_API unsigned int getJointIndex(std::string name);
 
 

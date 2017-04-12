@@ -66,13 +66,14 @@ void D3dclass::createInputLayout()
 	hr =device->CreateVertexShader(VertexShader, sizeof(VertexShader), NULL, &vertexShader);
 	hr =device->CreatePixelShader(PixelShader, sizeof(PixelShader), NULL, &pixelShader);
 	hr = device->CreatePixelShader(debugPixelShader, sizeof(debugPixelShader), NULL, &d_PixelShader);
-
+	hr = device->CreateVertexShader(SkinVertexShader, sizeof(SkinVertexShader), NULL, &skinVertexShader);
 	D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
 	{
 		{ "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "UV", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 		{ "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-
+		{ "BLENDINDICES" ,0 ,DXGI_FORMAT_R32G32B32_FLOAT ,0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+		{ "BLENDWEIGHT" ,0 ,DXGI_FORMAT_R32G32B32_FLOAT ,0, D3D11_APPEND_ALIGNED_ELEMENT, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 	};
 	
 	 hr =device->CreateInputLayout(inputElementDesc, ARRAYSIZE(inputElementDesc), &VertexShader, sizeof(VertexShader), &layout);

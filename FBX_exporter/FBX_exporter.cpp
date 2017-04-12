@@ -4,7 +4,7 @@
 
 FbxManager* mFBXManager;
 FbxScene* mFBXScene;
-std::unordered_map<unsigned int, DirectX::XMFLOAT3> points;
+std::unordered_map<unsigned int, Point> points;
 
 
 
@@ -64,6 +64,19 @@ FBX_READER_API bool loadScene(const char * filename)
 
 
 }
+
+FBX_READER_API unsigned int getJointIndex(std::string name)
+{
+	for (unsigned int i = 0; i < joints.size(); ++i)
+	{
+		if (joints[i].mName == name)
+		{
+			return i;
+		}
+	}
+}
+
+
 
 FBX_READER_API void getUV(FbxMesh* inMesh, int inCtrlPointIndex, int inTextureUVIndex, int inUVLayer, float outUV[2])
 {
@@ -192,18 +205,18 @@ FBX_READER_API void getNodeVertexData(FbxNode* inNode,std::vector<Vertex> &verti
 
 		for (unsigned int j = 0; j < 3; j++)
 		{
+			
 			int pointIndex = currMesh->GetPolygonVertex(i, j);
-			DirectX::XMFLOAT3 currPoint = points[pointIndex];
-
+		
+			DirectX::XMFLOAT3 currPoint = points[pointIndex].point;
+			
 			getNormal(currMesh, pointIndex, vCounter, normal);
 			for (int k = 0; k < 1; ++k)
-				getUV(currMesh, pointIndex, currMesh->GetTextureUVIndex(i, j), k, uv);
+			getUV(currMesh, pointIndex, currMesh->GetTextureUVIndex(i, j), k, uv);
 
 
 			Vertex temp;
 			temp.position = currPoint;
-			
-
 			 temp.normal.x= normal[0];
 			 temp.normal.y = normal[1];
 			 temp.normal.z = normal[2];
@@ -211,11 +224,14 @@ FBX_READER_API void getNodeVertexData(FbxNode* inNode,std::vector<Vertex> &verti
 			temp.UV.x = uv[0];
 			temp.UV.y = uv[1];
 
+			
+			
+
+			
+			temp.blends = points[pointIndex].blends;
 			vertices.push_back(temp);
 			vertexIndexes.push_back(vCounter);
 			++vCounter;
-
-
 
 		}
 
@@ -242,8 +258,39 @@ FBX_READER_API void processPoints(FbxNode* node)
 		currPoint.y = static_cast<float>(currMesh->GetControlPointAt(i).mData[1]);
 		currPoint.z = static_cast<float>(currMesh->GetControlPointAt(i).mData[2]);
 
-		points[i] = currPoint;
+		points[i].point = currPoint;
 	}
+	unsigned int numOfDeformers = currMesh->GetDeformerCount();
+	for (int i1 = 0; i1 < numOfDeformers; i1++)
+	{
+		FbxSkin* currSkin = reinterpret_cast<FbxSkin*>(currMesh->GetDeformer(i1, FbxDeformer::eSkin));
+
+		if (!currSkin)
+		{
+			continue;
+		}
+
+		unsigned int numOfClusters = currSkin->GetClusterCount();
+		for (unsigned int clusterIndex = 0; clusterIndex < numOfClusters; ++clusterIndex)
+		{
+			FbxCluster* currCluster = currSkin->GetCluster(clusterIndex);
+			std::string currJointName = currCluster->GetLink()->GetName();
+			unsigned int currJointIndex = getJointIndex(currJointName);
+
+			unsigned int numOfIndices = currCluster->GetControlPointIndicesCount();
+			for (unsigned int i = 0; i < numOfIndices; ++i)
+			{
+				BlendInfo curr;
+				curr.index = currJointIndex;
+				curr.weight = currCluster->GetControlPointWeights()[i];
+				points[currCluster->GetControlPointIndices()[i]].blends.push_back(curr);
+
+
+			}
+		}
+	}
+	
+
 }
 FBX_READER_API void processData(FbxNode* node,std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes)
 {
@@ -351,6 +398,7 @@ FBX_READER_API FbxNode* getSkeletonRoot()
 
 			if (skeleton->IsSkeletonRoot())
 			{
+				
 				return node;
 			}
 
@@ -425,6 +473,7 @@ bool loadFBX(const char * filename, std::vector<Vertex> &vertices, std::vector<u
 	
 	fillJointVector(getSkeletonRoot(), 0, 0, -1);
 	processData(mFBXScene->GetRootNode(), vertices, vertexIndexes);
+
 	GetAnimationData();
 	exportData(animation);
 

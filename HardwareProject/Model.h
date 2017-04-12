@@ -22,6 +22,9 @@ public:
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 uv;
 		DirectX::XMFLOAT3 normal;
+		DirectX::XMFLOAT4 jointIndex;
+		DirectX::XMFLOAT4 weights;
+
 		/*DirectX::XMFLOAT3 tangent;
 		DirectX::XMFLOAT3 binormal;*/
 	};
@@ -48,6 +51,7 @@ public:
 	std::vector<DirectX::XMFLOAT3> uvs;
 	std::vector<DirectX::XMFLOAT3> normals;
 	std::vector<unsigned int> vertexIndexes;
+	
 	std::vector<unsigned int> normalIndexes;
 	std::vector<unsigned int> uvIndexes;
 	std::vector<VertexPositionUVNormal> vertexList;

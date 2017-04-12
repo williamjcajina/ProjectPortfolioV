@@ -152,7 +152,7 @@ bool Model::loadModelFBX(const char * file_name)
 {
 	std::vector<Vertex> _vertices;
 	
-	loadFBX(file_name, _vertices, vertexIndexes , animation);
+	loadFBX(file_name, _vertices, vertexIndexes , animation );
 
 	isFBX = true;
 	for (unsigned int i = 0; i < vertexIndexes.size(); i++)
@@ -168,6 +168,17 @@ bool Model::loadModelFBX(const char * file_name)
 		vertex.uv.x = t.UV.x;
 		vertex.uv.y = t.UV.y;
 		vertex.uv.z = 0;
+		
+		t.blends.resize(4);
+		vertex.jointIndex.x = t.blends[0].index;
+		vertex.jointIndex.y = t.blends[1].index;
+		vertex.jointIndex.z = t.blends[2].index;
+		vertex.jointIndex.w = t.blends[3].index;
+		vertex.weights.x = t.blends[0].weight;
+		vertex.weights.y = t.blends[1].weight;
+		vertex.weights.z = t.blends[2].weight;
+		vertex.weights.w = t.blends[3].weight;
+		
 		vertexList.push_back(vertex);
 	}
 

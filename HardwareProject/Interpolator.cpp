@@ -6,7 +6,7 @@ void Interpolator::SetTime(XTime &timer)
 {
 	double time = timer.TotalTime()*1000.0f;
 
-	if (time > animation->duration)
+	if (time >= animation->duration)
 	{
 		timer.Restart();
 		currentTime = 0.0f;

@@ -5,8 +5,8 @@
 
 #include "VertexShader.csh"
 #include "PixelShader.csh"
+#include "SkinVertexShader.csh"
 #include "debugPixelShader.csh"
-
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 #include <DirectXColors.h>
@@ -36,6 +36,7 @@ using namespace DirectX;
 	
 		ID3D11PixelShader *pixelShader;
 		ID3D11VertexShader *vertexShader;
+		ID3D11VertexShader *skinVertexShader;
 		ID3D11PixelShader *d_PixelShader;
 		ID3D11DepthStencilState* m_depthStencilState;
 		ID3D11DepthStencilView* m_depthStencilView;
