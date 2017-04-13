@@ -9,7 +9,7 @@ public:
 	void SetTime(XTime &timer);
 	JointData Interpolate(JointData & prev, JointData & next, float ratio);
 	std::vector<JointData> currentPose();
-	std::vector<JointData> pose;
+	std::vector<JointData> currPose;
 	float currentTime;
 	Interpolator();
 

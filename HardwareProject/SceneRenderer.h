@@ -3,6 +3,7 @@
 #include "XTime.h"
 #include "Model.h"
 #include "Interpolator.h"
+#include "DDSTextureLoader.h"
 class SceneRenderer
 {
 	struct Debug
@@ -35,8 +36,14 @@ class SceneRenderer
 		Model* model;
 		Interpolator* interpolator;
 		std::vector<Line> bones;
-		bool isFBX;
+		bool isFBX = false;
+		bool isOBJ =false;
 		const char* name = nullptr;
+		
+		bool Textured = false;
+		ID3D11ShaderResourceView* textureView =nullptr;
+		ID3D11Texture2D* Texture = nullptr;
+		const wchar_t* textureName;
 	};
 public:
 	
@@ -52,7 +59,8 @@ public:
 	ModelViewProjectionConstantBuffer	m_constantBufferData;
 	JointMatrix m_jointCbufferData;
 	DirectX::XMFLOAT4X4 m_camera;
-
+	ID3D11Buffer* m_light_constantBuffer;
+	Light light;
 	Debug debug;
 
 	void init(D3dclass resource);

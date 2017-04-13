@@ -75,6 +75,8 @@ std::vector<JointData> Interpolator::currentPose()
 		
 		pose.push_back(Interpolate(prev.joints[j], next.joints[j], ratio));
 	}
+	currPose.clear();
+	currPose = pose;
 	return pose;
 }
 

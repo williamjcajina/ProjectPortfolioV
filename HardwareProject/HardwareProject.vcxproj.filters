@@ -45,6 +45,9 @@
     <ClCompile Include="Interpolator.cpp">
       <Filter>Interpolator</Filter>
     </ClCompile>
+    <ClCompile Include="DDSTextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="D3dclass.h">
@@ -67,6 +70,9 @@
     </ClInclude>
     <ClInclude Include="Interpolator.h">
       <Filter>Interpolator</Filter>
+    </ClInclude>
+    <ClInclude Include="DDSTextureLoader.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

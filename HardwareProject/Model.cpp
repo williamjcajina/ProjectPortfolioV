@@ -166,7 +166,7 @@ bool Model::loadModelFBX(const char * file_name)
 		vertex.normal = t.normal;
 		
 		vertex.uv.x = t.UV.x;
-		vertex.uv.y = t.UV.y;
+		vertex.uv.y = 1.0f- t.UV.y;
 		vertex.uv.z = 0;
 		
 		t.blends.resize(4);
@@ -178,14 +178,15 @@ bool Model::loadModelFBX(const char * file_name)
 		vertex.weights.y = t.blends[1].weight;
 		vertex.weights.z = t.blends[2].weight;
 		vertex.weights.w = t.blends[3].weight;
-		float sum = (vertex.weights.x + vertex.weights.y + vertex.weights.z + vertex.weights.w);
-		if (sum > 1)
-			int kl = 90;
+		
+	
+	
+
 		vertexList.push_back(vertex);
 	}
 
 	
-	
+\
 
 
 	return true;

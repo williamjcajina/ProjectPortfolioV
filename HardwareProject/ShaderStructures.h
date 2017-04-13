@@ -26,13 +26,34 @@ using namespace DirectX;
 	struct JointMatrix
 	{
 	
-		DirectX::XMFLOAT4X4 inverseBindPose[60];
-		DirectX::XMFLOAT4X4 jointsMatrices[60];
+		DirectX::XMFLOAT4X4 jointsMatrices[40];
      
 
 	};
 
 
+	struct Light
+	{
+		DirectX::XMFLOAT3 cameraPos;
+		float Tex;
+		DirectX::XMFLOAT4 ambientColor;
+		DirectX::XMFLOAT4 diffuseColor;
+		DirectX::XMFLOAT3 lightDirection;
+		float pointRadius;
+		DirectX::XMFLOAT4 pointColor;
+		DirectX::XMFLOAT3 pointLightPosition;
+		float specularPower;
+		DirectX::XMFLOAT4 specularColor;
+		DirectX::XMFLOAT3 spotPos;
+		float spotInnerRatio;
+		DirectX::XMFLOAT3 conedir;
+		float coneRatio;
+		DirectX::XMFLOAT4 spotColor;
+		float spotOuterRatio;
+		float normalMap;
+		DirectX::XMFLOAT2 padd;
 
+
+	};
 
 

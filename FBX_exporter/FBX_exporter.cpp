@@ -226,7 +226,8 @@ FBX_READER_API void getNodeVertexData(FbxNode* inNode,std::vector<Vertex> &verti
 
 			
 			
-
+			if (points[pointIndex].blends.size() > 2)
+				int idfs = 0;
 			
 			temp.blends = points[pointIndex].blends;
 			vertices.push_back(temp);
@@ -288,6 +289,12 @@ FBX_READER_API void processPoints(FbxNode* node)
 
 			}
 		}
+	}
+
+	for (int i = 0; i < pointCount; i++)
+	{
+		if (points[pointCount].blends.size() > 2)
+			int opo = 0;
 	}
 	
 
@@ -368,7 +375,7 @@ FBX_READER_API void exportData(AnimationData &anim)
 			
 			
 
-		
+			
 
 			out.time = animationClip.frames[i].time;
 			out.name = animationClip.frames[i].name;

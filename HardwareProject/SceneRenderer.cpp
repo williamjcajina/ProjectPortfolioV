@@ -40,6 +40,22 @@ void SceneRenderer::init(D3dclass resource)
 	createBuffers();
 	createConstantBuffers();
 	setCamera();
+	
+	light.ambientColor = XMFLOAT4(0.2, 0.2, 0.2, 1);
+	light.diffuseColor = XMFLOAT4(1, 1, 1, 1);
+	light.lightDirection = XMFLOAT3(-1, 0, 0);
+	light.pointLightPosition = XMFLOAT3(0, 0, 0);
+	light.pointColor = XMFLOAT4(0, 0, 0, 1);
+	light.specularColor = XMFLOAT4(1, 1, 1, 1);
+	light.specularPower = 20.0f;
+	light.cameraPos = XMFLOAT3(m_camera._41, m_camera._42, m_camera._43);
+	light.spotColor = XMFLOAT4(0, 0, 0, 0);
+	light.conedir = XMFLOAT3(0, 0, 0);
+	light.spotPos = XMFLOAT3(0, 0, 8);
+	light.coneRatio = 0;
+	light.spotInnerRatio = 0;
+	light.spotOuterRatio = 0;
+	light.pointRadius = 0.0f;
 
 }
 
@@ -50,10 +66,10 @@ void SceneRenderer::createBuffers()
 
 		static const VertexPositionColor floorVertices[] =
 		{
-			{ XMFLOAT3(-5, 0.0f, 5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3(5, 0.0f,  5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3(-5,  0.0f, -5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-			{ XMFLOAT3(5,  0.0f, -5), XMFLOAT3(0.5f, 0.5f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 0.0f) }
+			{ XMFLOAT3(-5, 0.0f, 5), XMFLOAT3(1.0f, 0.0f, 0.0f) , XMFLOAT3(-1.0f, 0.0f, 1.0f) },
+			{ XMFLOAT3(5, 0.0f,  5), XMFLOAT3(1.0f, 1.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 1.0f) },
+			{ XMFLOAT3(-5,  0.0f, -5), XMFLOAT3(0.0f, 0.0f, 0.5f) , XMFLOAT3(-1.0f, 0.0f, -1.0f) },
+			{ XMFLOAT3(5,  0.0f, -5), XMFLOAT3(0.0f, 1.0f, 0.5f) , XMFLOAT3(1.0f, 0.0f, 1.0f) }
 
 
 		};
@@ -91,6 +107,8 @@ void SceneRenderer::createBuffers()
 		XMStoreFloat4x4(&floor.worldMatrix, transform);
 
 		floor.isFBX = false;
+		HRESULT r = CreateDDSTextureFromFile(Resources.device, L"floor.dds", (ID3D11Resource**)&floor.Texture, &floor.textureView);
+		floor.Textured = true;
 		Models.push_back(floor);
 
 
@@ -172,10 +190,18 @@ void SceneRenderer::createBuffers()
 		ModelBuffers modelName;
 
 		/*modelName.name = "helicopter2.obj";*/
-		modelName.name = "Teddy_Idle.fbx"; 
+		modelName.name = "Teddy_Run.fbx"; 
+		modelName.textureName = L"Teddy_D.dds";
+		modelName.isFBX = true;
+		modelName.Textured = true;
 		Models.push_back(modelName);
 		
-		
+		ModelBuffers modelName2;
+
+		/*modelName.name = "helicopter2.obj";*/
+		modelName2.name = "helicopter2.obj";
+		modelName2.isOBJ = true;
+		Models.push_back(modelName2);
 
 
 		for (unsigned int i = 0; i <Models.size(); i++)
@@ -183,12 +209,16 @@ void SceneRenderer::createBuffers()
 
 
 			Model* model = new Model;
-			if (Models[i].name == nullptr)
+			if (!Models[i].isFBX && !Models[i].isOBJ)
 				continue;
-			if(!model->loadModelFBX(Models[i].name))
+			if(Models[i].isFBX)
+				model->loadModelFBX(Models[i].name);
+			if(Models[i].isOBJ)
 			model->loadModel(Models[i].name);
-		
-
+			
+			if(Models[i].Textured)
+			HRESULT r = CreateDDSTextureFromFile(Resources.device, Models[i].textureName, (ID3D11Resource**)&Models[i].Texture, &Models[i].textureView);
+			Models[i].Textured = true;
 			const int  vertsNumber = model->vertexList.size();
 			VertexPositionColor* modelVertices = new VertexPositionColor[vertsNumber];
 			
@@ -201,8 +231,6 @@ void SceneRenderer::createBuffers()
 				modelVertices[i].jointIndex = model->vertexList[i].jointIndex;
 				modelVertices[i].weights = model->vertexList[i].weights;
 			
-
-
 			}
 
 
@@ -216,7 +244,7 @@ void SceneRenderer::createBuffers()
 
 	
 
-			unsigned short* modelIndices = new unsigned short[model->vertexIndexes.size() - 1];
+			unsigned short* modelIndices = new unsigned short[model->vertexIndexes.size()];
 			for (unsigned int i = 0; i < model->vertexIndexes.size(); i++)
 			{
 				modelIndices[i] = i;
@@ -224,7 +252,7 @@ void SceneRenderer::createBuffers()
 			}
 
 		
-			Models[i].m_model_indexCount = model->vertexIndexes.size() - 1;
+			Models[i].m_model_indexCount = model->vertexIndexes.size();
 			D3D11_SUBRESOURCE_DATA indexBufferData = { 0 };
 			indexBufferData.pSysMem = modelIndices;
 			indexBufferData.SysMemPitch = 0;
@@ -242,10 +270,10 @@ void SceneRenderer::createBuffers()
 			
 
 			XMStoreFloat4x4(&Models[i].worldMatrix, DirectX::XMMatrixIdentity());
-		
+			Models[i].model = model;
 			if (model->isFBX)
 			{
-				Models[i].model = model;
+				
 				Models[i].interpolator = new Interpolator;
 				Models[i].interpolator->animation = &Models[i].model->animation;
 				Models[i].isFBX = true;
@@ -286,6 +314,10 @@ void SceneRenderer::createConstantBuffers()
 	jointMatrixBufferDesc.StructureByteStride = 0;
 	result = Resources.device->CreateBuffer(&jointMatrixBufferDesc, NULL, &m_AnimationBuffer);
 
+	CD3D11_BUFFER_DESC constantBufferDesc2(sizeof(Light), D3D11_BIND_CONSTANT_BUFFER);
+	result = (Resources.device->CreateBuffer(&constantBufferDesc2, nullptr, &m_light_constantBuffer));
+
+	
 }
 
 void SceneRenderer::setCamera()
@@ -364,7 +396,10 @@ void SceneRenderer::Render()
 		drawModel(Models[2]);
 	
 	drawModel(Models[0]);
-
+	int w = 20;
+	if (Models[2].interpolator->currPose.size()>0)
+	Models[3].worldMatrix = buildMatrix(Models[2].interpolator->currPose[w].translation, Models[2].interpolator->currPose[w].rotation, Models[2].interpolator->currPose[w].scale);
+	drawModel(Models[3]);
 	
 	Resources.swapChain->Present(0, 0);
 }
@@ -464,6 +499,34 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 		debug.axis = !debug.axis;
 	}
 	
+
+
+	if (buttons[VK_UP])
+	{
+		light.ambientColor.x += light.ambientColor.x*delta_time;
+		light.ambientColor.y += light.ambientColor.y*delta_time;
+		light.ambientColor.z += light.ambientColor.z*delta_time;
+	}
+	if (buttons[VK_DOWN])
+	{
+		light.ambientColor.x -= light.ambientColor.x*delta_time;
+		light.ambientColor.y -= light.ambientColor.y*delta_time;
+		light.ambientColor.z -= light.ambientColor.z*delta_time;
+	}
+	if (buttons[VK_LEFT])
+	{
+		light.lightDirection.x += 1.0*delta_time;
+		if (light.lightDirection.x > 1.0f)
+			light.lightDirection.x = 1.0f;
+	}
+	if (buttons[VK_RIGHT])
+	{
+		light.lightDirection.x -= 1.0*delta_time;
+		if (light.lightDirection.x < 1.0f)
+			light.lightDirection.x = -1.0f;
+	}
+
+
 		currMousePos[0] =(float) msg.pt.x;
 		currMousePos[1] =(float) msg.pt.y;
 		if (tracking )
@@ -589,8 +652,18 @@ void SceneRenderer::drawModel(ModelBuffers model)
 	
 	auto context = Resources.context;
 	context->RSSetState(0);
-
-	context->PSSetShader(Resources.pixelShader, nullptr, 0);
+	if (model.Textured)
+	{
+		context->PSSetShader(Resources.pixelShader, nullptr, 0);
+		context->PSSetShaderResources(0, 1, &model.textureView);
+	
+		context->PSSetConstantBuffers(0, 1, &m_light_constantBuffer);
+		context->UpdateSubresource(m_light_constantBuffer, 0, NULL, &light, 0, 0);
+	}
+	else
+		context->PSSetShader(Resources.d_PixelShader, nullptr, 0);
+		
+	
 	UINT stride = sizeof(VertexPositionColor);
 	UINT offset = 0;
 
@@ -605,6 +678,7 @@ void SceneRenderer::drawModel(ModelBuffers model)
 	context->IASetIndexBuffer(model.m_model_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	context->IASetVertexBuffers(0, 1, &model.m_model_vertexBuffer, &stride, &offset);
 	context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	
 	context->DrawIndexed(model.m_model_indexCount, 0, 0);
 	
 
@@ -861,17 +935,21 @@ void SceneRenderer::setAnimationCbuffer(AnimationData anim, std::vector<JointDat
 {
 	for (int i = 0; i < anim.frames[0].joints.size(); i++)
 	{
-		XMMATRIX curr = XMLoadFloat4x4(&buildMatrix(anim.frames[0].joints[i].translation, anim.frames[0].joints[i].rotation, anim.frames[0].joints[i].scale));
+		XMMATRIX currInverse = XMLoadFloat4x4(&buildMatrix(anim.frames[0].joints[i].translation, anim.frames[0].joints[i].rotation, anim.frames[0].joints[i].scale));
 		
-		XMFLOAT4X4 currInverse;
-		XMStoreFloat4x4(&currInverse, DirectX::XMMatrixInverse(nullptr, curr));
-		m_jointCbufferData.inverseBindPose[i] = currInverse;
+	
+		
 
 		if (currPose.size() == anim.frames[0].joints.size())
 		{
 			JointData currP = currPose[i];
+			currInverse = DirectX::XMMatrixInverse(nullptr, currInverse);
 
-			m_jointCbufferData.jointsMatrices[i] = buildMatrix(currP.translation, currP.rotation, currP.scale);
+			XMMATRIX currMatrix = XMLoadFloat4x4(&buildMatrix(currP.translation, currP.rotation, currP.scale));
+			XMStoreFloat4x4(&m_jointCbufferData.jointsMatrices[i], XMMatrixMultiply(currMatrix,currInverse));
+			
+
+
 		}
 		
 	}

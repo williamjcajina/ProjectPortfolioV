@@ -12,8 +12,8 @@ cbuffer ModelViewProjectionConstantBuffer : register(b0)
 };
 cbuffer Animation: register(b1)
 {
-    matrix jointsInverse[60];
-	matrix jointsCurrent[60];
+
+	matrix jointsCurrent[40];
 
 }
 // Per-vertex data used as input to the vertex shader.
@@ -34,7 +34,9 @@ struct PixelShaderInput
     float4 pos : SV_POSITION;
     float3 uv : UV;
     float3 normal : NORMAL;
- 
+    float3 worldPos : TEXCOORD0;
+    float3 localPos : TEXCOORD1;
+  
 };
 
 // Simple shader to do vertex processing on the GPU.
@@ -43,32 +45,21 @@ PixelShaderInput main(VertexShaderInput input)
    
     PixelShaderInput output;
     float4 pos = float4(input.pos, 1.0f);
-	float4 b1 = pos;
-	float4 b2 = pos;
-	float4 b3 = pos;
-	float4 b4 = pos;
+    float4 blend;
 
-	 pos = mul(pos, jointsInverse[input.blendIndecis.x]);
-	 pos = mul(pos, jointsCurrent[input.blendIndecis.x]);
+
+	 //pos = mul(pos, jointsCurrent[input.blendIndecis.x]);
+	 
+    blend = mul(pos, jointsCurrent[input.blendIndecis.x]) * input.weights.x;
+    blend += mul(pos, jointsCurrent[input.blendIndecis.y]) * input.weights.y;
+    blend += mul(pos, jointsCurrent[input.blendIndecis.z]) * input.weights.z;
+    blend += mul(pos, jointsCurrent[input.blendIndecis.w]) * input.weights.w;
+
 	
-
-	/*b1 = mul(b1, jointsInverse[input.blendIndecis.x]);
-	b1 = mul(b1, jointsCurrent[input.blendIndecis.x]);
-	b1 *= input.weights.x;
-
-
-	b2 = mul(b2, jointsInverse[input.blendIndecis.y]);
-	b2 = mul(b2, jointsCurrent[input.blendIndecis.y]);
-	b2 *= input.weights.y;
-
-	b3 = mul(b3, jointsInverse[input.blendIndecis.z]);
-	b3 = mul(b3, jointsCurrent[input.blendIndecis.z]);
-	b3 *= input.weights.z;
-
-	b4 = mul(b4, jointsInverse[input.blendIndecis.w]);
-	b4 = mul(b4, jointsCurrent[input.blendIndecis.w]);
-	b4 *= input.weights.w;
-	pos = b1+b2+b3 + b4;*/
+    pos = blend;
+    
+    output.localPos = pos;
+    output.worldPos = mul(pos, model);
 
 
     pos = mul(pos, model);

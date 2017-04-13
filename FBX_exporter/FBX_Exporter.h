@@ -61,10 +61,10 @@ struct Point
 
 	std::vector<BlendInfo> blends;
 
-	Point()
+	/*Point()
 	{
 		blends.reserve(4);
-	}
+	}*/
 };
 
 FBX_READER_API bool loadFBX(const char * filename, std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes, AnimationData &animation);
