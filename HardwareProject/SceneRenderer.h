@@ -13,7 +13,7 @@ class SceneRenderer
 		bool joints = true;
 		bool axis = true;
 		bool bones = true;
-
+		bool anim = true;
 	};
 
 	struct Line
@@ -71,7 +71,7 @@ public:
 private:
 	
 	bool	m_loadingComplete;
-	
+int currentPose = 0;
 	float cameraSpeed = 100.0f;
 	bool tracking;
 	float mouseSpeed = 0.020f;

@@ -20,7 +20,7 @@ SceneRenderer::SceneRenderer()
 	debug.joints = true;
 	debug.bones = true;
 	debug.axis = true;
-	debug.wireframe = false;
+	debug.wireframe =true;
 
 	
 }
@@ -198,8 +198,10 @@ void SceneRenderer::createBuffers()
 		
 		ModelBuffers modelName2;
 
-		/*modelName.name = "helicopter2.obj";*/
-		modelName2.name = "helicopter2.obj";
+	
+		modelName2.name = "barrel.obj";
+		modelName2.textureName = L"barrel.dds";
+		modelName2.Textured = true;
 		modelName2.isOBJ = true;
 		Models.push_back(modelName2);
 
@@ -396,9 +398,13 @@ void SceneRenderer::Render()
 		drawModel(Models[2]);
 	
 	drawModel(Models[0]);
-	int w = 20;
-	if (Models[2].interpolator->currPose.size()>0)
-	Models[3].worldMatrix = buildMatrix(Models[2].interpolator->currPose[w].translation, Models[2].interpolator->currPose[w].rotation, Models[2].interpolator->currPose[w].scale);
+	int w = 21;
+	if (Models[2].interpolator->currPose.size() > 0)
+	{
+		
+		Models[3].worldMatrix = buildMatrix(Models[2].interpolator->currPose[w].translation, Models[2].interpolator->currPose[w].rotation, XMFLOAT4(5,30,5,1));
+	}
+	if(!debug.on)
 	drawModel(Models[3]);
 	
 	Resources.swapChain->Present(0, 0);
@@ -416,6 +422,10 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 		prevButtons['B'] = buttons['B'];
 		prevButtons['U'] = buttons['U'];
 		prevButtons['K'] = buttons['K'];
+		prevButtons['Q'] = buttons['Q'];
+		prevButtons['E'] = buttons['E'];
+		prevButtons['R'] = buttons['R'];
+
 	}
 	
 	if (msg.message == WM_KEYDOWN)
@@ -500,6 +510,23 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 	}
 	
 
+	if (buttons['R'] && !prevButtons['R'])
+	{
+		debug.anim = !debug.anim;
+	}
+
+	if (buttons['Q'] && !prevButtons['Q'])
+	{
+		currentPose--;
+		if (currentPose < 0)
+			currentPose = Models[2].model->animation.frames.size() - 1;
+	}
+	if (buttons['E'] && !prevButtons['E'])
+	{
+		currentPose++;
+		if (currentPose > Models[2].model->animation.frames.size() - 1)
+			currentPose = 0;
+	}
 
 	if (buttons[VK_UP])
 	{
@@ -652,7 +679,12 @@ void SceneRenderer::drawModel(ModelBuffers model)
 	
 	auto context = Resources.context;
 	context->RSSetState(0);
-	if (model.Textured)
+
+	if (debug.on)
+		light.Tex = false;
+	else
+		light.Tex = true;
+	if (model.Textured /*&& !debug.on*/)
 	{
 		context->PSSetShader(Resources.pixelShader, nullptr, 0);
 		context->PSSetShaderResources(0, 1, &model.textureView);
@@ -664,13 +696,20 @@ void SceneRenderer::drawModel(ModelBuffers model)
 		context->PSSetShader(Resources.d_PixelShader, nullptr, 0);
 		
 	
+
+
 	UINT stride = sizeof(VertexPositionColor);
 	UINT offset = 0;
 
 	if (model.isFBX)
 	{
 		model.interpolator->SetTime(timer);
-		std::vector<JointData> current = model.interpolator->currentPose();
+		std::vector<JointData> current;
+		if (debug.anim)
+		 current = model.interpolator->currentPose();
+		else
+		current = model.interpolator->animation->frames[currentPose].joints;
+		
 		setAnimationCbuffer(model.model->animation, current);
 	}
 	
@@ -702,9 +741,9 @@ void SceneRenderer::createAxisBuffer()
 	VertexPositionColor modelVertices[vertsNumber] =
 	{ 
 		{ XMFLOAT3( 0.0f, 0.0f, 0.0f), XMFLOAT3(1.0f, 1.0f, 1.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3( 1.0f,0.0f,0.0f ), XMFLOAT3(1.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(0.0f,1.0f,0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
-		{ XMFLOAT3(0.0f,0.0f,1.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3( 6.0f,0.0f,0.0f ), XMFLOAT3(1.0f, 0.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(0.0f,6.0f,0.0f), XMFLOAT3(0.0f, 1.0f, 0.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
+		{ XMFLOAT3(0.0f,0.0f,10.0f), XMFLOAT3(0.0f, 0.0f, 1.0f) , XMFLOAT3(1.0f, 0.0f, 0.0f) },
 	};
 
 
@@ -746,7 +785,11 @@ void SceneRenderer::debugRender(ModelBuffers model)
 	
 	
 	model.interpolator->SetTime(timer);
-	std::vector<JointData> current = model.interpolator->currentPose();
+	std::vector<JointData> current;
+	if(debug.anim)
+	current = model.interpolator->currentPose();
+	else
+		current = model.interpolator->animation->frames[currentPose].joints;
 	
 	setAnimationCbuffer(model.model->animation, current);
 	updateConstanBufferModel(model.worldMatrix, model.isFBX);
@@ -760,7 +803,7 @@ void SceneRenderer::debugRender(ModelBuffers model)
 	
 	
 	
-	/*if (debug.wireframe)*/
+	if (debug.wireframe)
 	context->DrawIndexed(model.m_model_indexCount, 0, 0);
 	
 	
@@ -821,7 +864,7 @@ void SceneRenderer::drawAxis(XMFLOAT4X4 matrix)
 	
 	updateConstanBufferModel(matrix,false);
 
-	context->PSSetShader(Resources.pixelShader, nullptr, 0);
+	context->PSSetShader(Resources.d_PixelShader, nullptr, 0);
 
 	UINT stride = sizeof(VertexPositionColor);
 	UINT offset = 0;
@@ -866,7 +909,7 @@ void SceneRenderer::draWLine(XMFLOAT3 x, XMFLOAT3 y)
 	context->RSSetState(0);
 	
 	
-	context->PSSetShader(Resources.pixelShader, nullptr, 0);
+	context->PSSetShader(Resources.d_PixelShader, nullptr, 0);
 
 	context->IASetIndexBuffer(line.m_model_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
 	context->IASetVertexBuffers(0, 1, &line.m_model_vertexBuffer, &stride, &offset);

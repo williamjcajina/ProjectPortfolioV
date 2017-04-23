@@ -38,13 +38,15 @@ struct PixelShaderInput
 
 float4 main(PixelShaderInput input) : SV_TARGET
 {
-        
+        if(!Tex)
+        return float4(0.5, 0.5, 0.5, 0.5);
    
   
     float4 textureColor;
     float4 color;
         textureColor = shaderTexture.Sample(SampleType, input.uv);
    
+    
     
     //ambient Light
     color = saturate(ambientColor);
