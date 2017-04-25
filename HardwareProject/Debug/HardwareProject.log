@@ -1,8 +1,2 @@
-﻿  SceneRenderer.cpp
-c:\users\william\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(44): warning C4305: 'argument': truncation from 'double' to 'float'
-c:\users\william\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(527): warning C4018: '>': signed/unsigned mismatch
-c:\users\william\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(545): warning C4244: '+=': conversion from 'double' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(551): warning C4244: '-=': conversion from 'double' to 'float', possible loss of data
-c:\users\william\desktop\projectportfoliov\hardwareproject\scenerenderer.cpp(979): warning C4018: '<': signed/unsigned mismatch
-  HardwareProject.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\HardwareProject.exe
-  HardwareProject.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\HardwareProject.pdb (Full PDB)
+﻿  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.exe
+  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.pdb (Full PDB)
