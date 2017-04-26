@@ -362,6 +362,10 @@ void Model::CalculateVectors()
 
 Model::Model()
 {
+	delete[] indices;
 
+}
 
+Model::~Model()
+{
 }

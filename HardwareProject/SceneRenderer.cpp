@@ -212,7 +212,10 @@ void SceneRenderer::createBuffers()
 
 			Model* model = new Model;
 			if (!Models[i].isFBX && !Models[i].isOBJ)
+			{
+				delete model;
 				continue;
+			}
 			if(Models[i].isFBX)
 				model->loadModelFBX(Models[i].name);
 			if(Models[i].isOBJ)
@@ -268,8 +271,8 @@ void SceneRenderer::createBuffers()
 			
 		/*	modelIndices = nullptr;*/
 			
-			/*delete[] modelVertices;*/
-			
+			delete[] modelVertices;
+			delete[] modelIndices;
 
 			XMStoreFloat4x4(&Models[i].worldMatrix, DirectX::XMMatrixIdentity());
 			Models[i].model = model;
@@ -1006,20 +1009,23 @@ void SceneRenderer::Shutdown()
 	{
 		Models[i].m_model_vertexBuffer->Release();
 		Models[i].m_model_indexBuffer->Release();
-
+		if (Models[i].isFBX || Models[i].isOBJ)
+		delete Models[i].model;
 		if (Models[i].isFBX)
+		delete Models[i].interpolator;
+		if (Models[i].Textured)
 		{
-			for (unsigned int j = 0; j < Models[i].bones.size(); j++)
-			{
-				Models[i].bones[j].m_model_indexBuffer->Release();
-				Models[i].bones[j].m_model_vertexBuffer->Release();
-
-			}
+			Models[i].textureView->Release();
+			Models[i].Texture->Release();
 		}
 	}
 
+	m_light_constantBuffer->Release();
+	m_AnimationBuffer->Release();
 	axis.m_model_indexBuffer->Release();
 	axis.m_model_vertexBuffer->Release();
+	line.m_model_indexBuffer->Release();
+	line.m_model_vertexBuffer->Release();
 	m_constantBuffer->Release();
 	Resources.Shutdown();
 }

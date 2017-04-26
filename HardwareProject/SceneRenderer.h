@@ -4,6 +4,7 @@
 #include "Model.h"
 #include "Interpolator.h"
 #include "DDSTextureLoader.h"
+
 class SceneRenderer
 {
 	struct Debug
@@ -35,7 +36,7 @@ class SceneRenderer
 		unsigned int m_model_vertexCount;
 		Model* model;
 		Interpolator* interpolator;
-		std::vector<Line> bones;
+		
 		bool isFBX = false;
 		bool isOBJ =false;
 		const char* name = nullptr;

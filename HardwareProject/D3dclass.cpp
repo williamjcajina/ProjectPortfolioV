@@ -181,6 +181,7 @@ void D3dclass::Shutdown()
 	pixelShader->Release();
 	vertexShader->Release();
 	d_PixelShader->Release();
+	skinVertexShader->Release();
 	m_depthStencilState->Release();
 	m_depthStencilView->Release();
 	m_depthStencilBuffer->Release();
