@@ -1,2 +1,18 @@
-﻿  HardwareProject.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\HardwareProject.exe
-  HardwareProject.vcxproj -> C:\Users\William\Desktop\ProjectPortfolioV\Debug\HardwareProject.pdb (Full PDB)
+﻿  compilation header save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\HardwareProject\debugPixelShader.csh
+  compilation object save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\Debug\debugPixelShader.cso
+  compilation header save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\HardwareProject\PixelShader.csh
+  compilation object save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\Debug\PixelShader.cso
+  compilation header save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\HardwareProject\SkinVertexShader.csh
+  compilation object save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\Debug\SkinVertexShader.cso
+  compilation header save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\HardwareProject\VertexShader.csh
+  compilation object save succeeded; see C:\Users\Will\Desktop\ProjectPortfolioV\Debug\VertexShader.cso
+  XTime.cpp
+  SceneRenderer.cpp
+  Model.cpp
+  main.cpp
+  Interpolator.cpp
+  DDSTextureLoader.cpp
+  D3dclass.cpp
+  Generating Code...
+  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.exe
+  HardwareProject.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\HardwareProject.pdb (Full PDB)

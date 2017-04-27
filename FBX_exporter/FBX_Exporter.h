@@ -24,6 +24,47 @@ struct Vertex
 	DirectX::XMFLOAT3 normal;
 	std::vector<BlendInfo> blends;
 
+	bool operator==(const Vertex& vert) const
+	{
+		bool sameBlendingInfo = true;
+
+		bool x, y, z;
+		x = false;
+		y = false;
+		z = false;
+		float ep = 0.0001f;
+		if (position.x <= vert.position.x + ep && position.x >= vert.position.x-ep)
+			x = true;
+		
+		if (position.y <= vert.position.y + ep && position.y >= vert.position.y - ep)
+			y = true;
+		if (position.z <= vert.position.z + ep && position.z >= vert.position.z - ep)
+			z = true;
+
+		if (normal.x <= vert.normal.x + ep && normal.x >= vert.normal.x - ep)
+			x = true;
+		else
+			x = false;
+		if (normal.y <= vert.normal.y + ep && normal.y >= vert.normal.y - ep)
+			y = true;
+		else
+			y = false;
+		if (normal.z <= vert.normal.z + ep && normal.z >= vert.normal.z - ep)
+			z = true;
+		else
+			z = false;
+
+		if (UV.x <= vert.UV.x + ep && UV.x >= vert.UV.x - ep)
+			x = true;
+		else
+			x = false;
+		if (UV.y <= vert.UV.y + ep && UV.y >= vert.UV.y - ep)
+			y = true;
+		else
+			y = false;
+		
+		return (x && y &&z);
+	}
 	
 };
 
@@ -72,5 +113,6 @@ FBX_READER_API bool loadFBX(const char * filename, std::vector<Vertex> &vertices
 FBX_READER_API bool init();
 FBX_READER_API bool loadScene(const char * filename);
 FBX_READER_API unsigned int getJointIndex(std::string name);
+FBX_READER_API void removeDuplicates(std::vector<Vertex> &vertices, std::vector<unsigned int> &vertexIndexes);
 
 

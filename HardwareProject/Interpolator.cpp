@@ -12,7 +12,7 @@ void Interpolator::SetTime(XTime &timer)
 		currentTime = 0.0f;
 	}
 	else
-		currentTime = time;
+		currentTime = (float)time;
 }
 
 JointData Interpolator::Interpolate(JointData & prev, JointData & next , float ratio)
@@ -62,15 +62,15 @@ std::vector<JointData> Interpolator::currentPose()
 		}
 	}
 
-	startTime = prev.time;
-	endTime = next.time;
+	startTime = (float)prev.time;
+	endTime = (float)next.time;
 
 	if (prev.time > next.time)
 		startTime = 0;
 
 	ratio = (currentTime - startTime) / (endTime - startTime);
 
-	for (int j = 0; j < prev.joints.size(); j++)
+	for (unsigned int j = 0; j < prev.joints.size(); j++)
 	{
 		
 		pose.push_back(Interpolate(prev.joints[j], next.joints[j], ratio));

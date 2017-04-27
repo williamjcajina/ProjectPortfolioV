@@ -58,8 +58,8 @@ PixelShaderInput main(VertexShaderInput input)
 	
     pos = blend;
     
-    output.localPos = pos;
-    output.worldPos = mul(pos, model);
+    output.localPos =(float3) pos;
+    output.worldPos =(float3) mul(pos, model);
 
 
     pos = mul(pos, model);

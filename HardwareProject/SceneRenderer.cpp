@@ -41,7 +41,7 @@ void SceneRenderer::init(D3dclass resource)
 	createConstantBuffers();
 	setCamera();
 	
-	light.ambientColor = XMFLOAT4(0.2, 0.2, 0.2, 1);
+	light.ambientColor = XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 	light.diffuseColor = XMFLOAT4(1, 1, 1, 1);
 	light.lightDirection = XMFLOAT3(-1, 0, 0);
 	light.pointLightPosition = XMFLOAT3(0, 0, 0);
@@ -527,7 +527,7 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 	if (buttons['E'] && !prevButtons['E'])
 	{
 		currentPose++;
-		if (currentPose > Models[2].model->animation.frames.size() - 1)
+		if (currentPose > (int)Models[2].model->animation.frames.size() - 1)
 			currentPose = 0;
 	}
 
@@ -545,13 +545,13 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 	}
 	if (buttons[VK_LEFT])
 	{
-		light.lightDirection.x += 1.0*delta_time;
+		light.lightDirection.x += 1.0f*delta_time;
 		if (light.lightDirection.x > 1.0f)
 			light.lightDirection.x = 1.0f;
 	}
 	if (buttons[VK_RIGHT])
 	{
-		light.lightDirection.x -= 1.0*delta_time;
+		light.lightDirection.x -= 1.0f*delta_time;
 		if (light.lightDirection.x < 1.0f)
 			light.lightDirection.x = -1.0f;
 	}
@@ -979,7 +979,7 @@ void SceneRenderer::createLineBuffer()
 
 void SceneRenderer::setAnimationCbuffer(AnimationData anim, std::vector<JointData> currPose)
 {
-	for (int i = 0; i < anim.frames[0].joints.size(); i++)
+	for (unsigned int i = 0; i < anim.frames[0].joints.size(); i++)
 	{
 		XMMATRIX currInverse = XMLoadFloat4x4(&buildMatrix(anim.frames[0].joints[i].translation, anim.frames[0].joints[i].rotation, anim.frames[0].joints[i].scale));
 		

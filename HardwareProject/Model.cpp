@@ -157,8 +157,9 @@ bool Model::loadModelFBX(const char * file_name)
 	isFBX = true;
 	for (unsigned int i = 0; i < vertexIndexes.size(); i++)
 	{
+		
 		VertexPositionUVNormal vertex;
-		Vertex t = _vertices[i];
+		Vertex t = _vertices[vertexIndexes[i]];
 
 		vertex.pos = t.position;
 		
@@ -170,10 +171,10 @@ bool Model::loadModelFBX(const char * file_name)
 		vertex.uv.z = 0;
 		
 		t.blends.resize(4);
-		vertex.jointIndex.x = t.blends[0].index;
-		vertex.jointIndex.y = t.blends[1].index;
-		vertex.jointIndex.z = t.blends[2].index;
-		vertex.jointIndex.w = t.blends[3].index;
+		vertex.jointIndex.x = (float)t.blends[0].index;
+		vertex.jointIndex.y = (float)t.blends[1].index;
+		vertex.jointIndex.z = (float)t.blends[2].index;
+		vertex.jointIndex.w = (float)t.blends[3].index;
 		vertex.weights.x = t.blends[0].weight;
 		vertex.weights.y = t.blends[1].weight;
 		vertex.weights.z = t.blends[2].weight;

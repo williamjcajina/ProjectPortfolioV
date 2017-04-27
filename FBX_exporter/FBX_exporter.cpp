@@ -5,11 +5,26 @@
 FbxManager* mFBXManager;
 FbxScene* mFBXScene;
 std::unordered_map<unsigned int, Point> points;
+const int TABLE_SIZE = 1024;
+struct HashEntry
+{
+	Vertex vertex;
+	unsigned int index;
+};
+
+std::vector<HashEntry> hashList[1024];
 
 
+unsigned int Hash(Vertex vert)
+{
+	unsigned int index;
+
+	index =(unsigned int) (vert.blends[0].index + vert.normal.y * 333 + vert.position.y * 25 + vert.UV.x * 17);
+	
+	return index%TABLE_SIZE;
 
 
-
+}
 struct Joint
 {
 	std::string mName;
@@ -74,6 +89,74 @@ FBX_READER_API unsigned int getJointIndex(std::string name)
 			return i;
 		}
 	}
+	
+	return -1;
+}
+
+//bool findVert(Vertex vertex, std::vector<Vertex>& uniques, std::vector<unsigned int>& vertexIndexe)
+//{
+//	unsigned int i = 0;
+//	for (; i < uniques.size(); i++)
+//	{
+//		if (vertex == uniques[i])
+//		{
+//			vertexIndexe.push_back(i);
+//			return true;
+//		}
+//	}
+//	vertexIndexe.push_back(i);
+//	return false;
+//}
+
+bool findVert(unsigned int index, Vertex vertex, std::vector<unsigned int> &uniqueIndex, unsigned int indexCounter)
+{
+	
+	bool result = false;
+	for (unsigned int i = 0; i < hashList[index].size(); i++)
+	{
+		if (vertex == hashList[index][i].vertex)
+		{
+			
+			uniqueIndex.push_back(hashList[index][i].index);
+			result = true;
+		}
+
+
+		
+	}
+	return result;
+}
+
+
+FBX_READER_API void removeDuplicates(std::vector<Vertex>& vertices, std::vector<unsigned int>& vertexIndexes)
+{
+	std::vector<Vertex> uniques;
+	std::vector<unsigned int> uniqueIndex;
+	
+	unsigned int indexCounter =0;
+	for (unsigned int i = 0; i < vertices.size(); i++)
+	{
+		unsigned int index = Hash(vertices[i]);
+		if (!findVert(index, vertices[i],uniqueIndex,indexCounter))
+		{
+			HashEntry entry;
+			entry.vertex = vertices[i];
+			entry.index = (indexCounter);
+		
+			hashList[index].push_back(entry);
+			
+			uniques.push_back(vertices[i]);
+			uniqueIndex.push_back(indexCounter);
+			indexCounter++;
+		}
+	}
+	
+	
+
+	vertexIndexes.clear();
+	vertices.clear();
+	vertices = uniques;
+	vertexIndexes = uniqueIndex;
 }
 
 
@@ -196,6 +279,7 @@ FBX_READER_API void getNodeVertexData(FbxNode* inNode,std::vector<Vertex> &verti
 	FbxMesh* currMesh = inNode->GetMesh();
 
 	unsigned int triangleCount = currMesh->GetPolygonCount();
+	
 
 	int vCounter =0;
 	for (unsigned int i = 0; i < triangleCount; i++)
@@ -262,7 +346,7 @@ FBX_READER_API void processPoints(FbxNode* node)
 		points[i].point = currPoint;
 	}
 	unsigned int numOfDeformers = currMesh->GetDeformerCount();
-	for (int i1 = 0; i1 < numOfDeformers; i1++)
+	for (unsigned int i1 = 0; i1 < numOfDeformers; i1++)
 	{
 		FbxSkin* currSkin = reinterpret_cast<FbxSkin*>(currMesh->GetDeformer(i1, FbxDeformer::eSkin));
 
@@ -283,7 +367,7 @@ FBX_READER_API void processPoints(FbxNode* node)
 			{
 				BlendInfo curr;
 				curr.index = currJointIndex;
-				curr.weight = currCluster->GetControlPointWeights()[i];
+				curr.weight = (float)currCluster->GetControlPointWeights()[i];
 				points[currCluster->GetControlPointIndices()[i]].blends.push_back(curr);
 
 
@@ -291,11 +375,7 @@ FBX_READER_API void processPoints(FbxNode* node)
 		}
 	}
 
-	for (int i = 0; i < pointCount; i++)
-	{
-		if (points[pointCount].blends.size() > 2)
-			int opo = 0;
-	}
+
 	
 
 }
@@ -351,7 +431,7 @@ FBX_READER_API void exportData(AnimationData &anim)
 			 
 			
 
-			jd.rotation = DirectX::XMFLOAT4(quat.mData[0], quat.mData[1], quat.mData[2], quat.mData[3]);
+			jd.rotation = DirectX::XMFLOAT4((float)quat.mData[0], (float) quat.mData[1], (float)quat.mData[2], (float)quat.mData[3]);
 			jd.translation = DirectX::XMFLOAT4((float)pos.mData[0], (float)pos.mData[1], (float)pos.mData[2], (float)pos.mData[3]);
 			jd.scale = DirectX::XMFLOAT4((float)sca.mData[0], (float)sca.mData[1], (float)sca.mData[2], (float)sca.mData[3]);
 			/*DirectX::XMVECTOR scale, translation, rotation, quaternion;
@@ -440,14 +520,14 @@ FBX_READER_API void GetAnimationData()
 	FbxAnimStack* animStack = mFBXScene->GetCurrentAnimationStack();
 	FbxTimeSpan localTimeSpan = animStack->GetLocalTimeSpan();
 	FbxTime time = localTimeSpan.GetDuration();
-	unsigned int frameCount = time.GetFrameCount(FbxTime::eFrames24);
+	unsigned int frameCount = (unsigned int)time.GetFrameCount(FbxTime::eFrames24);
 
 	for (unsigned int i = 0; i < frameCount; i++)
 	{
 		KeyFrame frame;
 		FbxTime currTime;
 		currTime.SetFrame(i, FbxTime::eFrames24);
-		frame.time = currTime.GetMilliSeconds();
+		frame.time =(float) currTime.GetMilliSeconds();
 		for (unsigned int j = 0; j < joints.size(); j++)
 		{
 			Joint currJoint;
@@ -480,7 +560,7 @@ bool loadFBX(const char * filename, std::vector<Vertex> &vertices, std::vector<u
 	
 	fillJointVector(getSkeletonRoot(), 0, 0, -1);
 	processData(mFBXScene->GetRootNode(), vertices, vertexIndexes);
-
+	removeDuplicates(vertices, vertexIndexes);
 	GetAnimationData();
 	exportData(animation);
 

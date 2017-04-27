@@ -37,8 +37,8 @@ PixelShaderInput main(VertexShaderInput input)
    
     PixelShaderInput output;
     float4 pos = float4(input.pos, 1.0f);
-    output.localPos = pos;
-    output.worldPos = mul(pos, model);
+    output.localPos = (float3)pos;
+    output.worldPos = (float3)mul(pos, model);
 
     pos = mul(pos, model);
     pos = mul(pos, view);
