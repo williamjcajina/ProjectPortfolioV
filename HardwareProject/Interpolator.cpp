@@ -62,6 +62,9 @@ std::vector<JointData> Interpolator::currentPose()
 		}
 	}
 
+
+	
+
 	startTime = (float)prev.time;
 	endTime = (float)next.time;
 
@@ -75,9 +78,15 @@ std::vector<JointData> Interpolator::currentPose()
 		
 		pose.push_back(Interpolate(prev.joints[j], next.joints[j], ratio));
 	}
+	
 	currPose.clear();
 	currPose = pose;
 	return pose;
+}
+
+std::vector<JointData> Interpolator::dynamicPose()
+{
+	return animation->frames[0].joints;
 }
 
 

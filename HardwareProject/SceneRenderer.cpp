@@ -29,7 +29,7 @@ SceneRenderer::SceneRenderer()
 SceneRenderer::~SceneRenderer()
 {
 	
-	
+
 
 	
 }
@@ -81,7 +81,7 @@ void SceneRenderer::createBuffers()
 		CD3D11_BUFFER_DESC vertexBufferDesc1(sizeof(floorVertices), D3D11_BIND_VERTEX_BUFFER);
 		HRESULT hr = Resources.device->CreateBuffer(&vertexBufferDesc1, &vertexBufferData1, &floor.m_model_vertexBuffer);
 
-
+		
 
 		static const unsigned short floorIndices[] =
 		{
@@ -114,7 +114,7 @@ void SceneRenderer::createBuffers()
 
 	}
 
-
+	
 
 
 	auto createPyramid(); {
@@ -192,8 +192,11 @@ void SceneRenderer::createBuffers()
 		/*modelName.name = "helicopter2.obj";*/
 		modelName.name = "Teddy_Run.fbx"; 
 		modelName.textureName = L"Teddy_D.dds";
+		/*modelName.name = "batman70.fbx";
+		modelName.textureName = L"Teddy_D.dds";*/
 		modelName.isFBX = true;
 		modelName.Textured = true;
+		modelName.hasAnimation = false;
 		Models.push_back(modelName);
 		
 		ModelBuffers modelName2;
@@ -402,7 +405,7 @@ void SceneRenderer::Render()
 	
 	drawModel(Models[0]);
 	int w = 21;
-	if (Models[2].interpolator->currPose.size() > 0)
+	if ( Models[2].interpolator->currPose.size() > 0)
 	{
 		
 		Models[3].worldMatrix = buildMatrix(Models[2].interpolator->currPose[w].translation, Models[2].interpolator->currPose[w].rotation, XMFLOAT4(5,30,5,1));
@@ -410,6 +413,7 @@ void SceneRenderer::Render()
 	if(!debug.on)
 	drawModel(Models[3]);
 	
+
 	Resources.swapChain->Present(0, 0);
 }
 
@@ -428,6 +432,7 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 		prevButtons['Q'] = buttons['Q'];
 		prevButtons['E'] = buttons['E'];
 		prevButtons['R'] = buttons['R'];
+		prevButtons['V'] = buttons['V'];
 
 	}
 	
@@ -512,6 +517,7 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 		debug.axis = !debug.axis;
 	}
 	
+	
 
 	if (buttons['R'] && !prevButtons['R'])
 	{
@@ -531,6 +537,12 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 			currentPose = 0;
 	}
 
+
+	if (buttons['V'] && !prevButtons['V'])
+	{
+		debug.jointMoving = !debug.jointMoving;
+	}
+
 	if (buttons[VK_UP])
 	{
 		light.ambientColor.x += light.ambientColor.x*delta_time;
@@ -543,19 +555,32 @@ void SceneRenderer::UpdateCamera(MSG msg, XTime timer)
 		light.ambientColor.y -= light.ambientColor.y*delta_time;
 		light.ambientColor.z -= light.ambientColor.z*delta_time;
 	}
-	if (buttons[VK_LEFT])
+	if (buttons[VK_LEFT] && !debug.jointMoving)
 	{
 		light.lightDirection.x += 1.0f*delta_time;
 		if (light.lightDirection.x > 1.0f)
 			light.lightDirection.x = 1.0f;
 	}
-	if (buttons[VK_RIGHT])
+	if (buttons[VK_RIGHT] && !debug.jointMoving)
 	{
 		light.lightDirection.x -= 1.0f*delta_time;
 		if (light.lightDirection.x < 1.0f)
 			light.lightDirection.x = -1.0f;
 	}
 
+	if (buttons[VK_LEFT] && debug.jointMoving)
+	{
+		currentJoint--;
+
+		if (currentJoint < 0)
+			currentJoint = 0;
+	}
+	if (buttons[VK_RIGHT] && debug.jointMoving)
+	{
+	
+	/*	currentJoint++;
+		if(currentJoint > )*/
+	}
 
 		currMousePos[0] =(float) msg.pt.x;
 		currMousePos[1] =(float) msg.pt.y;
@@ -709,9 +734,11 @@ void SceneRenderer::drawModel(ModelBuffers model)
 		model.interpolator->SetTime(timer);
 		std::vector<JointData> current;
 		if (debug.anim)
-		 current = model.interpolator->currentPose();
+			/*current = model.interpolator->currentPose();*/
+			current = model.interpolator->dynamicPose();
 		else
-		current = model.interpolator->animation->frames[currentPose].joints;
+			current = model.interpolator->dynamicPose();
+		/*current = model.interpolator->animation->frames[currentPose].joints;*/
 		
 		setAnimationCbuffer(model.model->animation, current);
 	}
@@ -789,10 +816,12 @@ void SceneRenderer::debugRender(ModelBuffers model)
 	
 	model.interpolator->SetTime(timer);
 	std::vector<JointData> current;
-	if(debug.anim)
-	current = model.interpolator->currentPose();
+	if (debug.anim)
+		/*current = model.interpolator->currentPose();*/
+		current = model.interpolator->dynamicPose();
 	else
-		current = model.interpolator->animation->frames[currentPose].joints;
+		current = model.interpolator->dynamicPose();
+		/*current = model.interpolator->animation->frames[currentPose].joints;*/
 	
 	setAnimationCbuffer(model.model->animation, current);
 	updateConstanBufferModel(model.worldMatrix, model.isFBX);
@@ -988,7 +1017,10 @@ void SceneRenderer::setAnimationCbuffer(AnimationData anim, std::vector<JointDat
 
 		if (currPose.size() == anim.frames[0].joints.size())
 		{
+			
 			JointData currP = currPose[i];
+			
+			
 			currInverse = DirectX::XMMatrixInverse(nullptr, currInverse);
 
 			XMMATRIX currMatrix = XMLoadFloat4x4(&buildMatrix(currP.translation, currP.rotation, currP.scale));

@@ -1,7 +1,3 @@
-﻿  dllmain.cpp
-  stdafx.cpp
-  FBX_exporter.cpp
-  Generating Code...
-     Creating library C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.lib and object C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.exp
+﻿  FBX_exporter.cpp
   FBX_exporter.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.dll
   FBX_exporter.vcxproj -> C:\Users\Will\Desktop\ProjectPortfolioV\Debug\FBX_exporter.pdb (Full PDB)

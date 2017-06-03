@@ -15,6 +15,7 @@ class SceneRenderer
 		bool axis = true;
 		bool bones = true;
 		bool anim = true;
+		bool jointMoving = false;
 	};
 
 	struct Line
@@ -40,7 +41,7 @@ class SceneRenderer
 		bool isFBX = false;
 		bool isOBJ =false;
 		const char* name = nullptr;
-		
+		bool hasAnimation = false;
 		bool Textured = false;
 		ID3D11ShaderResourceView* textureView =nullptr;
 		ID3D11Texture2D* Texture = nullptr;
@@ -72,7 +73,8 @@ public:
 private:
 	
 	bool	m_loadingComplete;
-int currentPose = 0;
+	int currentPose = 0;
+	int currentJoint = 0;
 	float cameraSpeed = 100.0f;
 	bool tracking;
 	float mouseSpeed = 0.020f;

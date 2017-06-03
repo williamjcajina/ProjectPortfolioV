@@ -19,7 +19,7 @@ unsigned int Hash(Vertex vert)
 {
 	unsigned int index;
 
-	index =(unsigned int) (vert.blends[0].index + vert.normal.y * 333 + vert.position.y * 25 + vert.UV.x * 17);
+	index =(unsigned int) (/*vert.blends[0].index*/1 + vert.normal.y * 333 + vert.position.y * 25 + vert.UV.x * 17);
 	
 	return index%TABLE_SIZE;
 
@@ -93,20 +93,7 @@ FBX_READER_API unsigned int getJointIndex(std::string name)
 	return -1;
 }
 
-//bool findVert(Vertex vertex, std::vector<Vertex>& uniques, std::vector<unsigned int>& vertexIndexe)
-//{
-//	unsigned int i = 0;
-//	for (; i < uniques.size(); i++)
-//	{
-//		if (vertex == uniques[i])
-//		{
-//			vertexIndexe.push_back(i);
-//			return true;
-//		}
-//	}
-//	vertexIndexe.push_back(i);
-//	return false;
-//}
+
 
 bool findVert(unsigned int index, Vertex vertex, std::vector<unsigned int> &uniqueIndex, unsigned int indexCounter)
 {
@@ -434,23 +421,7 @@ FBX_READER_API void exportData(AnimationData &anim)
 			jd.rotation = DirectX::XMFLOAT4((float)quat.mData[0], (float) quat.mData[1], (float)quat.mData[2], (float)quat.mData[3]);
 			jd.translation = DirectX::XMFLOAT4((float)pos.mData[0], (float)pos.mData[1], (float)pos.mData[2], (float)pos.mData[3]);
 			jd.scale = DirectX::XMFLOAT4((float)sca.mData[0], (float)sca.mData[1], (float)sca.mData[2], (float)sca.mData[3]);
-			/*DirectX::XMVECTOR scale, translation, rotation, quaternion;
-
-			scale = DirectX::XMVectorSet((float)sca.mData[0], (float)sca.mData[1], (float)sca.mData[2], (float)sca.mData[3]);
-			translation = DirectX::XMVectorSet((float)pos.mData[0], (float)pos.mData[1], (float)pos.mData[2], (float)pos.mData[3]);
-			rotation = DirectX::XMVectorSet(0, 0, 0, 0);
-			quaternion = DirectX::XMVectorSet(quat.mData[0], quat.mData[1], quat.mData[2], quat.mData[3]);*/
 			
-		
-			
-			/*
-			DirectX::XMMATRIX matrix = DirectX::XMMatrixAffineTransformation(scale, rotation, quaternion, translation);
-		
-			
-			matrix = DirectX::XMMatrixTranspose(matrix);*/
-
-		
-			/*jd.matrix = matrix;*/
 
 			
 			
@@ -472,6 +443,10 @@ FBX_READER_API FbxNode* getSkeletonRoot()
 	int y = mFBXScene->GetPoseCount();
 	FbxPose *pose = mFBXScene->GetPose(0);
 	
+	if (y == 0)
+	{
+		return mFBXScene->GetRootNode();
+	}
 	
 	if (pose->IsBindPose())
 	{
